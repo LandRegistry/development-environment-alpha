@@ -1,0 +1,18 @@
+#!/bin/bash
+
+function checkout {
+  apps="${@}"
+  for app in $apps; do
+
+    _app=apps/${app}
+    if [ -e $_app ] ; then
+      echo "Refreshing application ${app}"
+      cd $_app
+      git pull
+      cd -
+    else 
+      mkdir -p apps/
+      git -C apps/ clone git@github.com:landregistry/${app}.git
+    fi
+  done
+}

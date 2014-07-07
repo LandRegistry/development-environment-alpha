@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[ -z `which foreman` ]]
+	then
+		echo "No local foreman installed. Installing"
+		sudo gem install foreman
+	fi
+

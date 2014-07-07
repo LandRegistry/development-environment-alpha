@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -x
+
+source script/utils/configure
+source script/utils/checkout
+ 
+checkout "`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`"

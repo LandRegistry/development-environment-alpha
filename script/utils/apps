@@ -1,0 +1,6 @@
+# Put the names of the repos in the LandRegistry gihub account in here
+# one per line and the bootstrap scripts will check them out for you when you 
+# create or refresh your development environment
+
+system-of-record 	
+mint				
