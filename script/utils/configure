@@ -24,3 +24,15 @@ if [[ -z `which virtualenv` ]]
 		sudo easy_install virtualenv 
 		sudo easy_install virtualenvwrapper
 	fi
+
+if [[ ! -d "/Applications/Postgres.app" ]] 
+	then
+		echo "Can't find postgress. Installing..."
+		rm -rf /tmp/pg.zip /tmp/Postgres.app
+		curl -L https://github.com/PostgresApp/PostgresApp/releases/download/9.3.4.2/Postgres-9.3.4.2.zip > /tmp/pg.zip
+		unzip /tmp/pg.zip -d /tmp
+		sudo mv /tmp/Postgres.app /Applications
+	fi
+	
+nohup open /Applications/Postgres.app > /dev/null 2>&1 &
+
