@@ -5,4 +5,17 @@ set -x
 source script/utils/configure
 source script/utils/checkout
  
-checkout "`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`"
+apps=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
+
+checkout ${apps}
+
+for app in ${apps}; do
+	app_dir=apps/${app}
+
+	if [[ ! -d ${app_dir}/dev ]]
+		then
+			echo "Configuring developer scripts for ${app}"
+			mkdir -p ${app_dir}/dev
+			cp -r script/dev ${app_dir}
+	fi
+done
