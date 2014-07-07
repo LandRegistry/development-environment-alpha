@@ -34,5 +34,5 @@ if [[ ! -d "/Applications/Postgres.app" ]]
 		sudo mv /tmp/Postgres.app /Applications
 	fi
 	
-nohup open /Applications/Postgres.app > /dev/null 2>&1 &
+open /Applications/Postgres.app 
 
