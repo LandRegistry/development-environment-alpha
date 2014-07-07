@@ -6,3 +6,21 @@ if [[ -z `which foreman` ]]
 		sudo gem install foreman
 	fi
 
+if [[ -z `which easy_install` ]]
+	then
+		echo "Can't find easy_install for python!"
+		exit 1
+	fi
+
+if [[ -z `which pip` ]]
+	then 
+		echo "Can't find pip. Installing..."
+		sudo easy_install pip
+	fi
+
+if [[ -z `which virtualenv` ]]
+	then 
+		echo "Can't find virtualenv. Installing..."
+		sudo easy_install virtualenv 
+		sudo easy_install virtualenvwrapper
+	fi
