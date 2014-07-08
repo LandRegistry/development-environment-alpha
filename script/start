@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Uncomment this line to enable debug
+#set -x
+
+if [[ -z ${@} ]]
+	then
+		echo "No application specified to start!" 
+		exit 1
+	fi
+
+cd apps/$@
+./dev/run-app
