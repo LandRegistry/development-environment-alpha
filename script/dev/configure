@@ -45,5 +45,5 @@ if [[ ! -d "/Applications/Postgres.app" ]]
 open /Applications/Postgres.app 
 source /usr/local/bin/virtualenvwrapper.sh
 
-
+echo 'pip install pytest' > ${WORKON_HOME}/postmkvirtualenv
 
