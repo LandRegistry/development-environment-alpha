@@ -17,5 +17,5 @@ for app in ${apps}; do
 			echo "Configuring developer scripts for ${app}"
 			mkdir -p ${app_dir}/dev
 			cp -r script/dev ${app_dir}
-	fi
+		fi
 done
