@@ -3,8 +3,6 @@
 export WORKON_HOME=~/.land-registry-python-venvs
 mkdir -p ${WORKON_HOME}
 
-export apps=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
-
 if [[ -z `which foreman` ]]
 	then
 		echo "No local foreman installed. Installing"

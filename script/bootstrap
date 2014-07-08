@@ -7,7 +7,6 @@ source script/dev/configure
 source script/utils/checkout
  
 apps=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
-
 checkout ${apps}
 
 for app in ${apps}; do
