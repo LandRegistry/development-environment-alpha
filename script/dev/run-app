@@ -1,8 +1,14 @@
 #!/bin/bash
 
 #Uncomment this line if you want to debug this script
-#set -x
+set -x
 
-app_name=basename("$PWD")
+source dev/configure
 
+app_name=`basename ${PWD}` 
 
+if [[ ! -d ${WORKON_HOME}/${app_name} ]]
+	then
+		echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
+		mkvirtualenv ${app_name}
+	fi
