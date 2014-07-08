@@ -4,11 +4,6 @@
 set -x
 
 source dev/configure
+source dev/virtualenv-functions
 
-app_name=`basename ${PWD}` 
-
-if [[ ! -d ${WORKON_HOME}/${app_name} ]]
-	then
-		echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
-		mkvirtualenv ${app_name}
-	fi
+create_virtual_env
