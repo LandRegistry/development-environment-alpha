@@ -11,8 +11,17 @@ if [[ -z ${script_to_run} ]]
 		exit 1
 	fi
 
+if [[ ! -f ${script_to_run} ]]
+	then
+		echo "I can't find the run script ${script_to_run}"
+		echo "Normally you would run"
+		echo "./dev/run-app run.sh"
+		exit 1
+	fi
+
 source dev/configure
 source dev/virtualenv-functions
 
 create_virtual_env
+workon ${app_name}
 . $@
