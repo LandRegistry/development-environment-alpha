@@ -5,10 +5,15 @@ script_to_run=${@}
 
 if [[ -z ${script_to_run} ]]
 	then
-		echo "You must supply an argument to run-app to specify which command you want to run."
-		echo "Normally you would run"
-		echo "./dev/run-app run.sh"
-		exit 1
+		if [[ -f run.sh ]]
+			then	
+				echo "Defaulting to run.sh as startup script"
+				script_to_run="run.sh"
+		else
+			echo "You haven't supplied a script to run and there is no run.sh in your project"
+			echo "I don't know what you want me to start"
+			exit 1
+		fi
 	fi
 
 if [[ ! -f ${script_to_run} ]]
@@ -24,4 +29,4 @@ source dev/virtualenv-functions
 
 create_virtual_env
 workon ${app_name}
-. $@
+. ${script_to_run}
