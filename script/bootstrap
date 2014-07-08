@@ -1,8 +1,9 @@
 #!/bin/bash
 
+# Uncomment the line below if you want to run this script with debug turned on
 set -x
 
-source script/utils/configure
+source script/dev/configure
 source script/utils/checkout
  
 apps=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
@@ -19,3 +20,5 @@ for app in ${apps}; do
 			cp -r script/dev ${app_dir}
 		fi
 done
+
+export WORKON_HOME

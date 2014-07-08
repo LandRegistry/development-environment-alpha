@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export WORKON_HOME=~/.land-registry-python-venvs
+mkdir -p ${WORKON_HOME}
+
 if [[ -z `which foreman` ]]
 	then
 		echo "No local foreman installed. Installing"
@@ -22,6 +25,11 @@ if [[ -z `which virtualenv` ]]
 	then 
 		echo "Can't find virtualenv. Installing..."
 		sudo easy_install virtualenv 
+	fi
+
+if [[ ! -f "/usr/local/bin/virtualenvwrapper.sh" ]]
+	then
+		echo "Cant find virtualenvwrapper. Installing..."
 		sudo easy_install virtualenvwrapper
 	fi
 
@@ -35,4 +43,7 @@ if [[ ! -d "/Applications/Postgres.app" ]]
 	fi
 	
 open /Applications/Postgres.app 
+source /usr/local/bin/virtualenvwrapper.sh
+
+
 
