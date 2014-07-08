@@ -33,16 +33,21 @@ if [[ ! -f "/usr/local/bin/virtualenvwrapper.sh" ]]
 		sudo easy_install virtualenvwrapper
 	fi
 
-if [[ ! -d "/Applications/Postgres.app" ]] 
-	then
-		echo "Can't find postgress. Installing..."
-		rm -rf /tmp/pg.zip /tmp/Postgres.app
-		curl -L https://github.com/PostgresApp/PostgresApp/releases/download/9.3.4.2/Postgres-9.3.4.2.zip > /tmp/pg.zip
-		unzip /tmp/pg.zip -d /tmp
-		sudo mv /tmp/Postgres.app /Applications
-	fi
-	
-open /Applications/Postgres.app 
+case `uname -n` in
+	Darwin)
+		if [[ ! -d "/Applications/Postgres.app" ]] 
+			then
+				echo "Can't find postgress. Installing..."
+				rm -rf /tmp/pg.zip /tmp/Postgres.app
+				curl -L https://github.com/PostgresApp/PostgresApp/releases/download/9.3.4.2/Postgres-9.3.4.2.zip > /tmp/pg.zip
+				unzip /tmp/pg.zip -d /tmp
+				sudo mv /tmp/Postgres.app /Applications
+			find
+		fi
+		open /Applications/Postgres.app
+	;;
+esac
+
 source /usr/local/bin/virtualenvwrapper.sh
 
 echo 'pip install pytest' > ${WORKON_HOME}/postmkvirtualenv

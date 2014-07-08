@@ -1,6 +1,8 @@
 #!/bin/bash
 
 #Uncomment this line if you want to debug this script
+#set -x
+
 script_to_run=${@}
 
 if [[ -z ${script_to_run} ]]
