@@ -1,9 +1,18 @@
 #!/bin/bash
 
 #Uncomment this line if you want to debug this script
-set -x
+script_to_run=${@}
+
+if [[ -z ${script_to_run} ]]
+	then
+		echo "You must supply an argument to run-app to specify which command you want to run."
+		echo "Normally you would run"
+		echo "./dev/run-app run.sh"
+		exit 1
+	fi
 
 source dev/configure
 source dev/virtualenv-functions
 
 create_virtual_env
+. $@
