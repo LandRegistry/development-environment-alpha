@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#Uncomment this line if you want to debug this script
+#set -x
+
+source dev/configure
+source dev/virtualenv-functions
+
+create_virtual_env
+workon ${app_name}
+
+py.test
