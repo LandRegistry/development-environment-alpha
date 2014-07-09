@@ -20,4 +20,5 @@ flask-examples
 docker-postgresql
 lr-docker-postgres/
 public-titles-api/
+property
 .DS_Store
