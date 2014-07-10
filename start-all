@@ -9,13 +9,13 @@ apps=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
 rm -f ./Procfile
 
 for app in ${apps}; do
-	procfile="apps/${app}/Procfile"
-
+            procfile="apps/${app}/Procfile"
 	if [[ -f ${procfile} ]]
-		then
-			echo "Merging procfile for ${app}"
-			echo "${app}: script/start ${app}" >> Procfile
-		fi
+ 	      then
+ 		echo "Merging procfile for ${app}"
+                          app_name=$(echo $app |  sed 's/-//g' )
+ 		echo "${app_name}: script/start ${app}" >> Procfile
+	 fi
 done
 
 foreman start
