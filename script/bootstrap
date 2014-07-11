@@ -15,16 +15,13 @@ for app_and_port in ${apps_and_ports}; do
 	checkout ${app}
 	app_dir=apps/${app}
 
-	if [[ ! -d ${app_dir}/dev ]]
+	if [[ ! -d ${app_dir}/dev ]] ; then
+		echo "Configuring developer scripts for ${app}"
+		mkdir -p ${app_dir}/dev
+		cp -r script/dev ${app_dir}
+	fi
 
-		then
-			echo "Configuring developer scripts for ${app}"
-			mkdir -p ${app_dir}/dev
-			cp -r script/dev ${app_dir}
-		fi
-
-		echo ${port} > ${app_dir}/dev/port
-
+	echo ${port} > ${app_dir}/dev/port
 done
 
 export WORKON_HOME

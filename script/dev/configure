@@ -8,11 +8,6 @@ if [[ -z `which foreman` ]] ; then
 	sudo gem install foreman
 fi
 
-if [[ -z `which easy_install` ]] ; then
-	echo "Can't find easy_install for python!"
-	exit 1
-fi
-
 if [[ -z `which sass` ]] ; then
 	echo "Cant find sass. Installing"
 	sudo gem install sass
