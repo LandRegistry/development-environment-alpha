@@ -8,5 +8,7 @@ source dev/virtualenv-functions
 
 create_virtual_env
 workon ${app_name}
+install_requirements
+install_test_requirements
 
 py.test
