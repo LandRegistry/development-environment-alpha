@@ -9,7 +9,7 @@ source script/checkout
 case `uname -s` in
 	Darwin)
 		echo "You will need to install a Java 7 VM if you want to run java applications like elastic search"
-		echo "If you're on a mac you can get that here: http://javadl.sun.com/webapps/download/AutoDL?BundleId=90217"
+		echo "If you're on a mac you can get that here: http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html"
 		echo "and you'll need to add the following to your ~.bash_profile"
 		echo
 		echo "export JAVA_HOME=\$(/usr/libexec/java_home 1.7)"
