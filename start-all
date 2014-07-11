@@ -3,9 +3,15 @@
 # Uncomment next line to enable debug
 #set -x
 
-source script/configure
-apps_and_ports=`cat script/apps | grep -v \# | grep -v '^\s*$'`
+if [[ ! -d apps ]]
+then
+	echo "You have not bootstrapped the environment. Doing that now."
+	echo
+	./bootstrap
+fi
 
+source script/dev/configure
+apps_and_ports=`cat script/apps | grep -v \# | grep -v '^\s*$'`
 rm -f ./Procfile
 
 for app_and_port in ${apps_and_ports}; do
