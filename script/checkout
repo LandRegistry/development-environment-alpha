@@ -13,6 +13,13 @@ function checkout {
     else 
       mkdir -p apps/
       git -C apps/ clone git@github.com:landregistry/${app}.git
+
+      if [[ -f apps/${app}/.gitmodules ]] 
+      then
+        echo "Initialising git submodule for ${app}"
+        git -C apps/${app} submodule init
+        git -C apps/${app} submodule update
+      fi
     fi
   done
 }
