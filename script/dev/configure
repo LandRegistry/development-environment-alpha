@@ -44,6 +44,8 @@ case `uname -s` in
 				sudo mv /tmp/Postgres.app /Applications
 			find
 		fi
+
+		export PATH=${PATH}:/Applications/Postgres.app/Contents/Versions/9.3/bin
 		open /Applications/Postgres.app
 	;;
 esac

@@ -31,4 +31,10 @@ source dev/virtualenv-functions
 
 create_virtual_env
 workon ${app_name}
+
+if [[ -f ./requirements.txt ]]
+	then
+		pip install -r ./requirements.txt
+fi 
+
 . ${script_to_run}

@@ -4,6 +4,14 @@ function create_virtual_env {
 	if [[ ! -d ${WORKON_HOME}/${app_name} ]]
 		then
 			echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
-			mkvirtualenv -a ${PWD} -r requirements.txt ${app_name}
+			mkvirtualenv -a ${PWD} ${app_name}
+		fi
+}
+
+function remove_virtual_env {
+	if [[ ! -d ${WORKON_HOME}/${app_name} ]]
+		then
+			echo "Removing python virtual env for ${app_name} in ${WORKON_HOME}"
+			rmvirtualenv ${app_name}
 		fi
 }
