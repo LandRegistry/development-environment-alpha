@@ -6,6 +6,15 @@
 source script/dev/configure
 source script/checkout
  
+case `uname -s` in
+	Darwin)
+		echo "You will need to install a Java 7 VM if you want to run java applications like elastic search"
+		echo "If you're on a mac you can get that here: http://javadl.sun.com/webapps/download/AutoDL?BundleId=90217"
+		echo "and you'll need to add the following to your ~.bash_profile"
+		echo
+		echo "export JAVA_HOME=\$(/usr/libexec/java_home 1.7)"
+esac
+
 apps_and_ports=`cat script/apps | grep -v \# | grep -v '^\s*$'`
 
 for app_and_port in ${apps_and_ports}; do
