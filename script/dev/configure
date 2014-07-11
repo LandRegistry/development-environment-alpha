@@ -33,7 +33,7 @@ if [[ ! -f "/usr/local/bin/virtualenvwrapper.sh" ]]
 		sudo easy_install virtualenvwrapper
 	fi
 
-case `uname -n` in
+case `uname -s` in
 	Darwin)
 		if [[ ! -d "/Applications/Postgres.app" ]] 
 			then
