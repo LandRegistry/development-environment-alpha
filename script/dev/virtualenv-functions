@@ -1,32 +1,28 @@
 export app_name=`basename ${PWD}` 
 
 function install_requirements {
-	if [[ -f ./requirements.txt ]]
-	then
+	if [[ -f ./requirements.txt ]] ; then
 		pip install -r ./requirements.txt
 	fi 
 }
 
 function install_test_requirements {
-	if [[ -f ./requirements_test.txt ]]
-	then
+	if [[ -f ./requirements_test.txt ]] ; then
 		pip install -r ./requirements_test.txt
 	fi 
 }
 
 function create_virtual_env {
-	if [[ ! -d ${WORKON_HOME}/${app_name} ]]
-		then
-			echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
-			mkvirtualenv -a ${PWD} ${app_name}
-		fi
+	if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
+		echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
+		mkvirtualenv -a ${PWD} ${app_name}
+	fi
 }
 
 function remove_virtual_env {
-	if [[ ! -d ${WORKON_HOME}/${app_name} ]]
-		then
-			echo "Removing python virtual env for ${app_name} in ${WORKON_HOME}"
-			rmvirtualenv ${app_name}
-		fi
+	if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
+		echo "Removing python virtual env for ${app_name} in ${WORKON_HOME}"
+		rmvirtualenv ${app_name}
+	fi
 }
 
