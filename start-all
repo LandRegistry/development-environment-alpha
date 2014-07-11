@@ -4,18 +4,20 @@
 #set -x
 
 source script/dev/configure
-apps=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
+apps_and_ports=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
 
 rm -f ./Procfile
 
-for app in ${apps}; do
-            procfile="apps/${app}/Procfile"
+for app_and_port in ${apps_and_ports}; do
+	app=`echo ${app_and_port} | cut -d':' -f1`
+    procfile="apps/${app}/Procfile"
+	
 	if [[ -f ${procfile} ]]
- 	      then
+ 	then
  		echo "Merging procfile for ${app}"
-                          app_name=$(echo $app |  sed 's/-//g' )
+        app_name=$(echo $app |  sed 's/-//g' )
  		echo "${app_name}: script/start ${app}" >> Procfile
-	 fi
+	fi
 done
 
 foreman start

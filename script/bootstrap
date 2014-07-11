@@ -1,13 +1,12 @@
 #!/bin/bash
 
 # Uncomment the line below if you want to run this script with debug turned on
-set -x
+#set -x
 
 source script/dev/configure
 source script/utils/checkout
  
 apps_and_ports=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
-apps=`echo ${apps_and_ports} | cut -d':' -f1`
 
 for app_and_port in ${apps_and_ports}; do
 	app=`echo ${app_and_port} | cut -d':' -f1`

@@ -1,3 +1,7 @@
 #!/bin/bash
 
+echo "Removing compiled python files"
 find . -type f -name "*pyc" | xargs rm
+
+echo "Removing web asset cache"
+find . -type d -name ".webasset-cache" | xargs rm -rf 
