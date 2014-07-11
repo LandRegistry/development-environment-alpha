@@ -3,53 +3,44 @@
 export WORKON_HOME=~/.land-registry-python-venvs
 mkdir -p ${WORKON_HOME}
 
-if [[ -z `which foreman` ]]
-	then
-		echo "No local foreman installed. Installing"
-		sudo gem install foreman
-	fi
+if [[ -z `which foreman` ]] ; then
+	echo "No local foreman installed. Installing"
+	sudo gem install foreman
+fi
 
-if [[ -z `which easy_install` ]]
-	then
-		echo "Can't find easy_install for python!"
-		exit 1
-	fi
+if [[ -z `which easy_install` ]] ; then
+	echo "Can't find easy_install for python!"
+	exit 1
+fi
 
+if [[ -z `which sass` ]] ; then
+	echo "Cant find sass. Installing"
+	sudo gem install sass
+fi
 
-if [[ -z `which sass` ]]
-	then
-		echo "Cant find sass. Installing"
-		sudo gem install sass
-	fi
+if [[ -z `which pip` ]] ; then 
+	echo "Can't find pip. Installing..."
+	sudo easy_install pip
+fi
 
-if [[ -z `which pip` ]]
-	then 
-		echo "Can't find pip. Installing..."
-		sudo easy_install pip
-	fi
+if [[ -z `which virtualenv` ]] ; then 
+	echo "Can't find virtualenv. Installing..."
+	sudo easy_install virtualenv 
+fi
 
-if [[ -z `which virtualenv` ]]
-	then 
-		echo "Can't find virtualenv. Installing..."
-		sudo easy_install virtualenv 
-	fi
-
-if [[ ! -f "/usr/local/bin/virtualenvwrapper.sh" ]]
-	then
-		echo "Cant find virtualenvwrapper. Installing..."
-		sudo easy_install virtualenvwrapper
-	fi
+if [[ ! -f "/usr/local/bin/virtualenvwrapper.sh" ]] ; then
+	echo "Cant find virtualenvwrapper. Installing..."
+	sudo easy_install virtualenvwrapper
+fi
 
 case `uname -s` in
 	Darwin)
-		if [[ ! -d "/Applications/Postgres.app" ]] 
-			then
-				echo "Can't find postgress. Installing..."
-				rm -rf /tmp/pg.zip /tmp/Postgres.app
-				curl -L https://github.com/PostgresApp/PostgresApp/releases/download/9.3.4.2/Postgres-9.3.4.2.zip > /tmp/pg.zip
-				unzip /tmp/pg.zip -d /tmp
-				sudo mv /tmp/Postgres.app /Applications
-			find
+		if [[ ! -d "/Applications/Postgres.app" ]] ; then
+			echo "Can't find postgress. Installing..."
+			rm -rf /tmp/pg.zip /tmp/Postgres.app
+			curl -L https://github.com/PostgresApp/PostgresApp/releases/download/9.3.4.2/Postgres-9.3.4.2.zip > /tmp/pg.zip
+			unzip /tmp/pg.zip -d /tmp
+			sudo mv /tmp/Postgres.app /Applications
 		fi
 
 		export PATH=${PATH}:/Applications/Postgres.app/Contents/Versions/9.3/bin
@@ -57,12 +48,11 @@ case `uname -s` in
 	;;
 esac
 
-if [[ -f dev/port ]]
-	then
-		port=`cat dev/port`
-		echo "Setting HTTP port to ${port}"
-		export PORT=${port}
-	fi
+if [[ -f dev/port ]] ; then
+	port=`cat dev/port`
+	echo "Setting HTTP port to ${port}"
+	export PORT=${port}
+fi
 
 source /usr/local/bin/virtualenvwrapper.sh
 
