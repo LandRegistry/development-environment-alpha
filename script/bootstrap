@@ -1,15 +1,19 @@
 #!/bin/bash
 
 # Uncomment the line below if you want to run this script with debug turned on
-#set -x
+set -x
 
 source script/dev/configure
 source script/utils/checkout
  
-apps=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
-checkout ${apps}
+apps_and_ports=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
+apps=`echo ${apps_and_ports} | cut -d':' -f1`
 
-for app in ${apps}; do
+for app_and_port in ${apps_and_ports}; do
+	app=`echo ${app_and_port} | cut -d':' -f1`
+	port=`echo ${app_and_port} | cut -d':' -f2`
+
+	checkout ${app}
 	app_dir=apps/${app}
 
 	if [[ ! -d ${app_dir}/dev ]]
@@ -17,6 +21,7 @@ for app in ${apps}; do
 			echo "Configuring developer scripts for ${app}"
 			mkdir -p ${app_dir}/dev
 			cp -r script/dev ${app_dir}
+			echo ${port} > ${app_dir}/dev/port
 		fi
 done
 
