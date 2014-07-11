@@ -3,8 +3,8 @@
 # Uncomment next line to enable debug
 #set -x
 
-source script/dev/configure
-apps_and_ports=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
+source script/configure
+apps_and_ports=`cat script/apps | grep -v \# | grep -v '^\s*$'`
 
 rm -f ./Procfile
 

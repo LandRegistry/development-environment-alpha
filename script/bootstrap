@@ -4,9 +4,9 @@
 #set -x
 
 source script/dev/configure
-source script/utils/checkout
+source script/checkout
  
-apps_and_ports=`cat script/utils/apps | grep -v \# | grep -v '^\s*$'`
+apps_and_ports=`cat script/apps | grep -v \# | grep -v '^\s*$'`
 
 for app_and_port in ${apps_and_ports}; do
 	app=`echo ${app_and_port} | cut -d':' -f1`

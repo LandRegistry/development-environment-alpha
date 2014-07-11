@@ -53,8 +53,9 @@ An overview of this repository layout is described below:
 development-environment
 +-- script (Root directory for all scripts and utilities. You shouldn't need to wory about these unless you are editng the deployment scripts)
 |		dev (developer scripts that are copied into the dev directory of each application)
-|       utils
+|       script
 | 			+-- apps (Script defining which apps to checkout from the repository)
+|           +-- configure (This script sets up the environment for each project and any global exports)
 |   bootstrap (Script to create the development environment. This can be re-run as new repositories are added)
 |   start-all (Script to start all configured applications with foreman)
 </pre>
