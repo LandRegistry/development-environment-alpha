@@ -23,5 +23,11 @@ function update_app {
     cd apps/${app}
     git pull
     cd -
+
+     if [[ -f apps/${app}/.gitmodules ]] ; then
+      echo "Initialising git submodule for ${app}"
+      git -C apps/${app} submodule init
+      git -C apps/${app} submodule update
+    fi
   fi
 }
