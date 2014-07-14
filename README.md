@@ -21,6 +21,12 @@ Please note these scripts are still very new and will likely need a little modif
 
 You will need a Mac running Mac OS 10.9 or above with a user account with sudo access. (This does not need to be an administrator, you just need to add yourself into /etc/sudoers)
 
+You will also need python version >= 2.7.5 and git version >= 1.8.0
+
+For external tools such as elasticsearch you will need java >= 1.7
+
+The various python libraries may require a C compiler to build, so you'll need the XCode command line tools, available from https://developer.apple.com/xcode/downloads/
+
 ### Bootstrapping
 
 To obtain a development environment simply check out this repository and run
@@ -40,6 +46,14 @@ In order to start all of the applications run
 ```
 
 from this repository. This will start all of the configured applications.
+
+### Running all of the unit tests
+
+To run all of the unit tests configured in the applications simply run 
+
+```
+./run-all-unit-tests.sh
+```
 
 ### Working with individual applications
 
@@ -68,7 +82,9 @@ New repositories can be added by editing the file
 script/utils/apps
 ```
 
-Simply add the repository name that you wish to add into this script and re-run bootstrap. The new repository will be checked out and the application added to the start script, if the repository contains a Procfile.
+Simply add the repository name that you wish to add into this script and re-run bootstrap. The new repository will be checked out and the application added to the start script.
+
+The format of this script is <pre>application-name:http-port</pre> and the startup scripts will configure Flask apps to run on this port for you.
 
 #### Developer tools in individual applications
 
@@ -100,14 +116,14 @@ dev/run-app myscript
 And to run the tests for an application simply execute the following
 
 ```
-dev\run-unit-tests
+dev/run-unit-tests
 ```
 
 ### Requirement for layout of the application repositories
 The expected layout for application repositories is defined in the (Flask Examples)[https://github.com/LandRegistry/flask-examples] repository.
 
 ### Configuring ports
-All applications must manage the configuration of their own ports. Currently this is done in the Procfile in each application, as an argument to gunicorn.
+All applications HTTP ports are managed in the /script/apps file. Look there for examples.
 
 ### Unit tests
 The development environment automatically installs (py.test)[http://pytest.org/latest/]
