@@ -25,11 +25,6 @@ if [[ -z `which virtualenvwrapper.sh` ]] ; then
 	sudo pip install -U virtualenvwrapper
 fi
 
-#if [[ ! -f "/usr/local/bin/virtualenvwrapper.sh" ]] ; then
-#	echo "Cant find virtualenvwrapper. Installing..."
-#	sudo easy_install virtualenvwrapper
-#fi
-
 case `uname -s` in
 	Darwin)
 		if [[ ! -d "/Applications/Postgres.app" ]] ; then
@@ -44,12 +39,6 @@ case `uname -s` in
 		open /Applications/Postgres.app
 	;;
 esac
-
-if [[ -f dev/port ]] ; then
-	port=`cat dev/port`
-	echo "Setting HTTP port to ${port}"
-	export PORT=${port}
-fi
 
 source /usr/local/bin/virtualenvwrapper.sh
 

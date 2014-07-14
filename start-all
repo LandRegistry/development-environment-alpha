@@ -2,6 +2,7 @@
 
 # Uncomment next line to enable debug
 #set -x
+set -e
 
 if [[ ! -d apps ]]
 then
@@ -16,13 +17,15 @@ rm -f ./Procfile
 
 for app_and_port in ${apps_and_ports}; do
 	app=`echo ${app_and_port} | cut -d':' -f1`
-    procfile="apps/${app}/Procfile"
+    run="apps/${app}/run.sh"
 	
-	if [[ -f ${procfile} ]]
+	if [[ -f ${run} ]]
  	then
- 		echo "Merging procfile for ${app}"
+ 		echo "Merging global foreman procfile for ${app}"
         app_name=$(echo $app |  sed 's/-//g' )
  		echo "${app_name}: script/start ${app}" >> Procfile
+ 	else
+ 		echo "There is not a run.sh present in ${app} so I'm not going to start it for you"
 	fi
 done
 
