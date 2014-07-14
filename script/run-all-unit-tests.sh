@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Uncomment this if you want to enable debug
+#set -x
+
+set -e
+
 if [[ ! -d ./apps ]] ; then
 	./bootstrap
 fi
