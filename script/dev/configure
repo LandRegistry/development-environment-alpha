@@ -18,7 +18,7 @@ if [[ -z `which pip` ]] ; then
 	sudo easy_install pip
 fi
 
-pip install setuptools==3.6
+sudo pip install setuptools==3.6
 
 if [[ -z `which virtualenvwrapper.sh` ]] ; then 
 	echo "Can't find virtualenvwrapper.sh. Installing..."
