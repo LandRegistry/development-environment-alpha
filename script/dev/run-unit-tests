@@ -6,9 +6,13 @@
 source dev/configure
 source dev/virtualenv-functions
 
-create_virtual_env
-workon ${app_name}
-install_requirements
-install_test_requirements
+if [[ -d tests ]] ; then
+    create_virtual_env
+    workon ${app_name}
+    install_requirements
+    install_test_requirements
 
-py.test
+    py.test
+else
+    echo "No unit tests found in ${app_name}"
+fi
