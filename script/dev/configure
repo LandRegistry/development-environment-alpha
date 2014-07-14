@@ -18,15 +18,17 @@ if [[ -z `which pip` ]] ; then
 	sudo easy_install pip
 fi
 
-if [[ -z `which virtualenv` ]] ; then 
-	echo "Can't find virtualenv. Installing..."
-	sudo easy_install virtualenv 
+pip install setuptools==3.6
+
+if [[ -z `which virtualenvwrapper.sh` ]] ; then 
+	echo "Can't find virtualenvwrapper.sh. Installing..."
+	sudo pip install -U virtualenvwrapper
 fi
 
-if [[ ! -f "/usr/local/bin/virtualenvwrapper.sh" ]] ; then
-	echo "Cant find virtualenvwrapper. Installing..."
-	sudo easy_install virtualenvwrapper
-fi
+#if [[ ! -f "/usr/local/bin/virtualenvwrapper.sh" ]] ; then
+#	echo "Cant find virtualenvwrapper. Installing..."
+#	sudo easy_install virtualenvwrapper
+#fi
 
 case `uname -s` in
 	Darwin)
