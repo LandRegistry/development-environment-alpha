@@ -44,3 +44,9 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 echo 'pip install pytest' > ${WORKON_HOME}/postmkvirtualenv
 
+if [[ -f dev/port ]] ; then
+ 	port=`cat dev/port`
+ 	echo "Setting HTTP port to ${port}"
+ 	export PORT=${port}
+fi
+
