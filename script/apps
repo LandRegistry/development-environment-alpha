@@ -8,7 +8,6 @@
 system-of-record:8000
 mint:8001
 property:8002
-#search-api:8003
+search-api:8003
 elastic-search-server:9200
 casework:8004
-
