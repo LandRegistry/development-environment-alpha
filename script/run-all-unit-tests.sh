@@ -19,7 +19,9 @@ for app_and_port in ${apps_and_ports}; do
 
 	echo "Running unit tests for ${app}"
 
-	cd apps/${app}
-	dev/run-unit-tests
-	cd ../..
+	if [[ -x apps/${app}/dev/run-unit-tests ]]; then
+		cd apps/${app}
+		dev/run-unit-tests
+		cd ../..
+	fi
 done
