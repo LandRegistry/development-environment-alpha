@@ -40,7 +40,7 @@ case `uname -s` in
 	;;
 esac
 
-source /usr/local/bin/virtualenvwrapper.sh
+source `which virtualenvwrapper.sh`
 
 if [[ -f dev/port ]] ; then
  	port=`cat dev/port`
