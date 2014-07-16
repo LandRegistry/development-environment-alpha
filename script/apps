@@ -7,8 +7,10 @@
 
 system-of-record:8000
 mint:8001
-property:8002
+property-frontend:8002
 search-api:8003
 elastic-search-server:9200
 casework-frontend:8004
 generate-test-data:0
+public-titles-api:8005
+the-feeder:8006
