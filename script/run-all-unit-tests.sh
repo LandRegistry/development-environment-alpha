@@ -5,9 +5,7 @@
 
 set -e
 
-if [[ ! -d ./apps ]] ; then
-	./bootstrap
-fi
+./bootstrap
 
 source script/dev/configure
 source script/checkout

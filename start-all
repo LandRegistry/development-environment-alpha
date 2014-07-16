@@ -4,12 +4,7 @@
 #set -x
 set -e
 
-if [[ ! -d apps ]]
-then
-	echo "You have not bootstrapped the environment. Doing that now."
-	echo
-	./bootstrap
-fi
+./bootstrap
 
 source script/dev/configure
 apps_and_ports=`cat script/apps | grep -v \# | grep -v '^\s*$'`

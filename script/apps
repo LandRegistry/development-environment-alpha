@@ -11,3 +11,4 @@ property:8002
 search-api:8003
 elastic-search-server:9200
 casework-frontend:8004
+generate-test-data:0
