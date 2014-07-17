@@ -39,11 +39,14 @@ The following sequence of commands (with comments) can be run on an Ubuntu machi
 
 		# mkvirtualenv should now use pyvenv (the pyenv virtualenvwrapper)
 		cd myproject
+		pyenv local 2.7.8
 		mkvirtualenv myproject
 
 
 		## or when using the development environment
 		git clone git@github.com:LandRegistry/development-environment.git
 		cd development-environment
+		pyenv local 2.7.8
+		# remember to add .python-version to your global ~/.gitignore !!!
 		pyenv virtualenvwrapper
 		# etc etc the dev env scripts
