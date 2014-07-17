@@ -190,6 +190,8 @@ resolve-dependencies-ubuntu-14
 
 These scripts would then execute the apt-get required to configure linux, and the rest of the scripts could be executed unedited.
 
+Alternatively, follow the steps in [LINUX.md](LINUX.md) to get a working development environment.
+
 ### Modifying the development scripts
 
 If you want to modify these development scripts it's no worry. If you need to test them simply remove the apps directory and re-run the scripts. There is also a script/remove-app-dev-directories.sh which will remove the dev directory in checked out apps which can be useful.
