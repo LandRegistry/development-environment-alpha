@@ -39,6 +39,7 @@ The following sequence of commands (with comments) can be run on an Ubuntu machi
 
 		# mkvirtualenv should now use pyvenv (the pyenv virtualenvwrapper)
 		cd myproject
+		pyenv install 2.7.8 # if you haven't done this yet
 		pyenv local 2.7.8
 		mkvirtualenv myproject
 
