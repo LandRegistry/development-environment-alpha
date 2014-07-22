@@ -25,6 +25,12 @@ You will also need python version >= 2.7.5 and git version >= 1.8.0
 
 For external tools such as elasticsearch you will need java >= 1.7
 
+You will also need a running redis server. If you're using a mac you can install this with homebrew using
+
+```
+brew install redis
+```
+
 The various python libraries may require a C compiler to build, so you'll need the XCode command line tools, available from https://developer.apple.com/xcode/downloads/
 
 ### Bootstrapping
