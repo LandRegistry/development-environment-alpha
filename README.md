@@ -111,7 +111,7 @@ cd apps/<app-name>
 dev/run-app
 ```
 
-When executing run-app the script will look for a run.sh in your application directory and execute it, first creating & configuring a python virutal environment. It is probably a good idea to ensure that your run.sh script is NOT executable, as this will stop you running it by mistake. You must ALWAYS use run-app to start yoour application.
+When executing run-app the script will look for a run.sh in your application directory and execute it, first creating & configuring a python virutal environment. It is probably a good idea to ensure that your run.sh script is NOT executable, as this will stop you running it by mistake. You must ALWAYS use run-app to start your application.
 
 If you want to execute another script instead of run.sh you can do the following:
 
@@ -123,6 +123,12 @@ And to run the tests for an application simply execute the following
 
 ```
 dev/run-unit-tests
+```
+
+To clean any compiled python files or compiled assets in the virtual envrionment use
+
+```
+dev/clean
 ```
 
 ### Requirement for layout of the application repositories
@@ -200,7 +206,14 @@ Alternatively, follow the steps in [LINUX.md](LINUX.md) to get a working develop
 
 ### Modifying the development scripts
 
-If you want to modify these development scripts it's no worry. If you need to test them simply remove the apps directory and re-run the scripts. There is also a script/remove-app-dev-directories.sh which will remove the dev directory in checked out apps which can be useful.
+If you want to modify these development scripts it's no worry. If you need to test them simply remove the apps directory and re-run the scripts. There is also a script s which will remove the dev directory in checked out apps which can be useful when editing the development scripts. If you do edit scripts in the script/dev directory simply run
+
+```
+script/remove-app-dev-directories.sh
+./bootstrap
+```
+
+which will clean out the dev directories in the dependent apps and install the new versions.
 
 The primary development environment is currently a Mac, so I'd ask that if you modify these scripts on a linux machine you don't check into master but provide a pull request so that a developer with a Mac can check that they still work on the Mac.
 
