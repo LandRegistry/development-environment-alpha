@@ -14,3 +14,4 @@ casework-frontend:8004
 generate-test-data:0
 public-titles-api:8005
 the-feeder:8006
+service-frontend:8007
