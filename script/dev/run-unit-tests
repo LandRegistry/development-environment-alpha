@@ -16,8 +16,15 @@ if [[ -d tests ]] ; then
 
     echo "Configuring SETTINGS to be config.TestConfig"
     echo "Please ensure you have a config.TestConfig in your project"
-    
-    py.test
+
+    # Thinking of doing this below it means all requirements_test.txt
+    # need updating to have pytest-cov
+    # and some of the modules need to be renamed to follow
+    # github repo (app_name) == project-name and python module == projectname
+    # if run-all-tests is to work
+    module_name=$(echo $app_name |  sed 's/-//g' )
+    py.test --cov ${module_name} tests/ --cov-report=term --cov-report=html
+
 else
     echo "No unit tests found in ${app_name}"
 fi
