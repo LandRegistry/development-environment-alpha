@@ -61,6 +61,14 @@ To run all of the unit tests configured in the applications simply run
 ./run-all-unit-tests.sh
 ```
 
+### If your environment becomes corrupted
+
+To clean out the environment and python virtual environments for all applications you can run
+
+```
+./clean
+```
+
 ### Working with individual applications
 
 These scripts will check out all of the configured applications into the apps directory of this repository.

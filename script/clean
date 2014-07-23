@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+apps_and_ports=`cat script/apps | grep -v \# | grep -v '^\s*$'`
+
+for app_and_port in ${apps_and_ports}; do
+	app=`echo ${app_and_port} | cut -d':' -f1`
+	
+	if [[ -f apps/${app}/dev/clean ]] ; then
+		echo "Cleaning ${app}"
+		cd apps/${app}
+		dev/clean
+		cd ../../
+	fi
+done
+
+	
+
