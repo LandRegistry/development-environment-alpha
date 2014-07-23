@@ -102,6 +102,7 @@ This "dev" directory currently contains the following executable scripts:
 run-app			(Run the application in its own python virtual-env)
 run-unit-tests  (Run the unit tests using py.test, described below in the unit-testing section)
 clean           (Remove any .pyc files that are present in the application directory, useful for debugging)
+run-command <command>    (Run the given command inside the virtual environment for this app)
 ```
 
 So, to start a sub application simply execute the following, assuming you are in the development-environment directory
