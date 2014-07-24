@@ -1,0 +1,83 @@
+#!/bin/bash
+set -e
+
+FIG_VERSION='0.5.1'
+
+echo "Adding repositories"
+
+# Java
+add-apt-repository ppa:webupd8team/java
+
+# Docker
+echo deb https://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+
+# Redis
+sudo apt-add-repository ppa:chris-lea/redis-server
+
+echo "Updating repositories"
+apt-get update -qq
+
+echo "Setting up core linux tools"
+apt-get install -y git libcurl4-openssl-dev
+
+echo "Refreshing provision cache"
+rm -rf /provision-cache
+mkdir -p /provision-cache
+
+echo "Setting up docker"
+apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0 
+
+echo 'export DOCKER_OPTS="-H unix:///var/run/docker.sock -H tcp://0.0.0.0:4243"' > /etc/default/docker
+echo 'export DOCKER_HOST=tcp://0.0.0.0:4243' > /home/vagrant/.bash_profile
+stop docker
+start docker
+
+echo "Installing fig"
+curl -L -s https://github.com/orchardup/fig/releases/download/$FIG_VERSION/linux > /usr/local/bin/fig
+chmod +x /usr/local/bin/fig
+
+echo "Installing Oracle java 7"
+echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+apt-get install -qy oracle-java7-installer
+update-java-alternatives -s java-7-oracle
+
+echo "Installing redis"
+apt-get install -y redis-server
+
+echo "Installing gems"
+gem install foreman
+gem install sass
+
+echo "Installing pyenv"
+pyenv_git=/home/vagrant/pyenv
+bash_profile=/home/vagrant/.bash_profile
+
+rm -rf ${pyenv_git}
+git clone git://github.com/yyuu/pyenv.git ${pyenv_git}
+
+echo "Installing pyenv-virtualenvwrapper"
+apt-get install virtualenvwrapper
+cp /usr/share/virtualenvwrapper/virtualenvwrapper.sh /usr/local/bin
+cp /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh /usr/local/bin
+chmod ugo+x /usr/local/bin/virtualenvwrapper.sh
+chmod ugo+x /usr/local/bin/virtualenvwrapper_lazy.sh
+
+pyenv_vr_git=${pyenv_git}/plugins/pyenv-virtualenvwrapper
+
+rm -rf ${pyenv_vr_git}
+git clone https://github.com/yyuu/pyenv-virtualenvwrapper.git ${pyenv_vr_git}
+
+echo "Configuring user environment"
+chown -R vagrant:vagrant /home/vagrant
+
+echo "source /etc/bash_completion.d/virtualenvwrapper" >> ${bash_profile}
+echo "export PYENV_ROOT=${pyenv_git}" >> ${bash_profile}
+echo "export PATH=${pyenv_git}/bin:$PATH" >> ${bash_profile}
+echo 'export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"' >> ${bash_profile}
+echo 'eval "$(pyenv init -)"' >> ${bash_profile}
+echo 'pyenv virtualenvwrapper' >> ${bash_profile}
+echo 'cd /vagrant' >> ${bash_profile}
+
+
+
