@@ -1,3 +1,4 @@
+
 export app_name=`basename ${PWD}` 
 
 function install_requirements {
@@ -15,7 +16,7 @@ function install_test_requirements {
 function create_virtual_env {
 	if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
 		echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
-		mkvirtualenv -a ${PWD} -r dev/venv-requirements.txt ${app_name}
+		mkvirtualenv -a ${PWD} -r /home/vagrant/script/dev/venv-requirements.txt ${app_name}
 	fi
 }
 

@@ -22,13 +22,13 @@ if [[ ! -f ${script_to_run} ]]
 	then
 		echo "I can't find the run script ${script_to_run}"
 		echo "Normally you would run"
-		echo "./dev/run-app run.sh"
+		echo "run-app ./<script-to-run>"
 		exit 1
 	fi
 
 
-source dev/configure
-source dev/virtualenv-functions
+source /vagrant/script/dev/configure
+source /vagrant/script/dev/virtualenv-functions
 
 create_virtual_env
 workon ${app_name}

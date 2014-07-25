@@ -4,34 +4,14 @@
 #set -x
 set -e
 
-source script/dev/configure
-source script/checkout
+source /vagrant/script/dev/configure
+source /vagrant/script/checkout
  
-case `uname -s` in
-	Darwin)
-		echo "You will need to install a Java 7 VM if you want to run java applications like elastic search"
-		echo "If you're on a mac you can get that here: http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html"
-		echo "and you'll need to add the following to your ~.bash_profile"
-		echo
-		echo "export JAVA_HOME=\$(/usr/libexec/java_home 1.7)"
-esac
-
 apps_and_ports=`cat script/apps | grep -v \# | grep -v '^\s*$'`
 
 for app_and_port in ${apps_and_ports}; do
-	app=`echo ${app_and_port} | cut -d':' -f1`
-	port=`echo ${app_and_port} | cut -d':' -f2`
+	export app_name=`echo ${app_and_port} | cut -d':' -f1`
 
-	checkout ${app}
-	app_dir=apps/${app}
-
-	if [[ ! -d ${app_dir}/dev ]] ; then
-		echo "Configuring developer scripts for ${app}"
-		mkdir -p ${app_dir}/dev
-		cp -r script/dev ${app_dir}
-	fi
-
-	echo ${port} > ${app_dir}/dev/port
+	checkout ${app_name}
 done
 
-export WORKON_HOME

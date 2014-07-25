@@ -67,28 +67,44 @@ bash_profile=/home/vagrant/.bash_profile
 rm -rf ${pyenv_git}
 git clone git://github.com/yyuu/pyenv.git ${pyenv_git}
 
-echo "Installing pyenv-virtualenvwrapper"
-apt-get install virtualenvwrapper
-cp /usr/share/virtualenvwrapper/virtualenvwrapper.sh /usr/local/bin
-cp /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh /usr/local/bin
-chmod ugo+x /usr/local/bin/virtualenvwrapper.sh
-chmod ugo+x /usr/local/bin/virtualenvwrapper_lazy.sh
+#echo "Installing pyenv-virtualenvwrapper"
+#apt-get install virtualenvwrapper
+#cp /usr/share/virtualenvwrapper/virtualenvwrapper.sh /usr/local/bin
+#cp /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh /usr/local/bin
+#chmod ugo+x /usr/local/bin/virtualenvwrapper.sh
+#chmod ugo+x /usr/local/bin/virtualenvwrapper_lazy.sh
 
 pyenv_vr_git=${pyenv_git}/plugins/pyenv-virtualenvwrapper
 
 rm -rf ${pyenv_vr_git}
 git clone https://github.com/yyuu/pyenv-virtualenvwrapper.git ${pyenv_vr_git}
+${pyenv_vr_git}/install.sh
 
 echo "Configuring user environment"
 chown -R vagrant:vagrant /home/vagrant
+rm -rf /home/vagrant/land-registry-python-venvs
 
-echo "source /etc/bash_completion.d/virtualenvwrapper" >> ${bash_profile}
-echo "export PYENV_ROOT=${pyenv_git}" >> ${bash_profile}
-echo "export PATH=${pyenv_git}/bin:$PATH" >> ${bash_profile}
-echo 'export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"' >> ${bash_profile}
+
+cat <<EOF > ${bash_profile}
+export PYENV_ROOT=${pyenv_git}
+export PATH=${pyenv_git}/bin:/vagrant/script/dev:$PATH
+export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
+export WORKON_HOME=/home/vagrant/land-registry-python-venvs
+mkdir -p /home/vagrant/land-registry-python-venvs
+EOF
+
 echo 'eval "$(pyenv init -)"' >> ${bash_profile}
-echo 'pyenv virtualenvwrapper' >> ${bash_profile}
-echo 'cd /vagrant' >> ${bash_profile}
 
+cat <<EOF >> ${bash_profile}
+if [[ ! -d ${PYENV_ROOT}/versions/2.7.8 ]] ; then
+	pyenv install 2.7.8
+fi
+
+pyenv global 2.7.8
+pyenv virtualenvwrapper
+alias ls="ls -F"
+cd /vagrant
+./bootstrap
+EOF
 
 

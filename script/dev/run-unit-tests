@@ -2,22 +2,30 @@
 
 #Uncomment this line if you want to debug this script
 #set -x
+set -e
 
-source dev/configure
-source dev/virtualenv-functions
+pyenv global 2.7.8
+pyenv virtualenvwrapper
+
+source /vagrant/script/dev/configure
+source /vagrant/script/dev/virtualenv-functions
 
 if [[ -d tests ]] ; then
     create_virtual_env
-    workon ${app_name}
     install_requirements
     install_test_requirements
 
-    export SETTINGS="config.TestConfig"
-
-    echo "Configuring SETTINGS to be config.TestConfig"
-    echo "Please ensure you have a config.TestConfig in your project"
     
+    if [[ -z SETTINGS ]] ; then
+    	echo "Configuring SETTINGS to be config.TestConfig"
+    	echo "Please ensure you have a config.TestConfig in your project"
+    	export SETTINGS="config.TestConfig"
+    fi
+
     py.test
 else
-    echo "No unit tests found in ${app_name}"
+    echo "No unit tests found in directory ${app_name}"
+    echo 
+    echo "You need to run this in a directory containing an application (normally /vagrant/apps/<app-name>)"
+    echo "or specify an app name: run-unit-tests <app-name>"
 fi
