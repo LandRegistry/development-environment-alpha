@@ -6,8 +6,8 @@ set -e
 
 script_to_run=${@}
 
-if [[ -z ${script_to_run} ]] ;; then
-	if [[ -f run.sh ]] ;; then	
+if [[ -z ${script_to_run} ]] ; then
+	if [[ -f run.sh ]] ; then	
 		echo "Defaulting to run.sh as startup script"
 		script_to_run="run.sh"
 	else
