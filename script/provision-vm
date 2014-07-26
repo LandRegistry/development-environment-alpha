@@ -48,6 +48,20 @@ gem install sass
 echo "Installing dependencies"
 apt-get install -qy postgresql-9.3 postgresql-server-dev-9.3 elasticsearch redis-server
 
+echo "Configuring postgres"
+cat <<EOF > /etc/postgresql/9.3/main/pg_hba.conf
+local   all             postgres                                peer
+local   all             all                                     trust
+host    all             all             127.0.0.1/32            trust
+host    all             all             ::1/128                 trust
+EOF
+
+service postgresql restart
+
+set +o errexit
+sudo -u postgres createuser -sw vagrant
+set -e
+
 echo "Configuring user environment"
 WORKON_HOME=/home/vagrant/land-registry-python-venvs
 bash_profile=/home/vagrant/.bash_profile
