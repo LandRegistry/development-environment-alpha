@@ -26,8 +26,6 @@ esac
 
 source /vagrant/script/checkout
  
-apps_and_ports=`cat /vagrant/script/apps | grep -v \# | grep -v '^\s*$'`
-
 for app_and_port in ${apps_and_ports}; do
 	app_name=`echo ${app_and_port} | cut -d':' -f1`
 

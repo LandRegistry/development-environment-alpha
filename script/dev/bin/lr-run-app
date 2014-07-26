@@ -38,6 +38,12 @@ if [[ ! -f run.sh ]] ; then
 fi
 
 source /vagrant/script/dev/virtualenv-functions
+source /vagrant/script/checkout
+
+if [[ $(is_valid_app $1) != 1 ]] ; then
+	echo "Can't find an app called $1 in the configuration file in /vagrant/script/apps"
+	exit 1
+fi
 
 create_virtual_env
 install_requirements
@@ -48,6 +54,6 @@ install_requirements
 # Until we've sorted out the apps we'll disable -e here
 
 set +o errexit
-source run.sh
+PORT=$(get_port_for_app $1) source run.sh
 deactivate
 set -e

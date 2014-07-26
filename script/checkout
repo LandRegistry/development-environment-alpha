@@ -1,5 +1,38 @@
 #!/bin/bash
 
+set -e
+
+apps_and_ports=`cat /vagrant/script/apps | grep -v \# | grep -v '^\s*$'`
+
+
+function get_port_for_app {
+  local app=$1 
+
+  if [[ $(is_valid_app $app) = 1 ]] ; then
+    for app_and_port in ${apps_and_ports}; do
+      local found_app_name=`echo ${app_and_port} | cut -d':' -f1`
+      local found_app_port=`echo ${app_and_port} | cut -d':' -f2`
+
+      if [[ ${app} = ${found_app_name} ]] ; then
+        echo $found_app_port
+      fi
+    done
+  fi
+}
+
+function is_valid_app {
+  local app=$1
+  local found_app_name
+
+  for app_and_port in ${apps_and_ports}; do
+    found_app_name=`echo ${app_and_port} | cut -d':' -f1`
+
+    if [[ ${app} = ${found_app_name} ]] ; then
+      echo 1
+    fi
+  done
+}
+
 function update_development_environment {
   echo "Updating development environment"
   git -C /vagrant pull 
@@ -7,7 +40,7 @@ function update_development_environment {
 }
 
 function checkout {
-  app=$1
+  local app=$1
  
   if [[ ! -d /vagrant/apps/${app} ]] ; then 
     mkdir -p /vagrant/apps/
@@ -22,7 +55,7 @@ function checkout {
 }
 
 function update_app {
-  app=$1
+  local app=$1
     
   if [ -d /vagrant/apps/${app} ] ; then
     echo "Refreshing application ${app}"
