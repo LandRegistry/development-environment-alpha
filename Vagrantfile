@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
     vb.customize ['modifyvm', :id, '--memory', ENV['VM_MEMORY'] || 4096]
     vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
     vb.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
-    vb.customize ["modifyvm", :id, "--cpus", "4"]  
+    vb.customize ["modifyvm", :id, "--cpus", ENV['VM_CPUS'] || 4]  
   end
 
   vagrantfile_extra = "#{ENV['VAGRANT_CWD']}/Vagrantfile_extra.rb"

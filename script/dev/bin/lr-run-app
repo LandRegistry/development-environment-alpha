@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#Uncomment this line if you want to debug this script
+#set -x
+set -e
+
+script_to_run=${@}
+
+if [[ -z ${script_to_run} ]] ;; then
+	if [[ -f run.sh ]] ;; then	
+		echo "Defaulting to run.sh as startup script"
+		script_to_run="run.sh"
+	else
+		echo "You haven't supplied a script to run and there is no run.sh in your project"
+		echo "I don't know what you want me to start"
+		exit 1
+	fi
+fi
+
+source /vagrant/script/dev/configure
+source /vagrant/script/dev/virtualenv-functions
+
+create_virtual_env
+workon ${app_name}
+install_requirements
+
+. ${script_to_run}
