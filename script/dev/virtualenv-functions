@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#set -x
 set -e
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
@@ -20,11 +21,15 @@ function install_test_requirements {
 function create_virtual_env {
 	if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
 		echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
+		set +o errexit
 		mkvirtualenv -a ${PWD} -r /vagrant/script/dev/venv-requirements.txt ${app_name}
+		set -e
 	fi
 	
 	echo "Activating virtual envrionment [${app_name}]"
-	source ${WORKON_HOME}/${app_name}/bin/activate
+	set +o errexit
+	workon ${app_name}
+	set -e
 	echo "Installing core requirements in virtual envrionment [${app_name}]"
 	pip install -r /vagrant/script/dev/venv-requirements.txt
 }
