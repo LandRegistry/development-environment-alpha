@@ -82,9 +82,6 @@ if [[ ! -d ./apps ]] ; then
 	echo "Bootstrapping environment"
 	lr-bootstrap
 fi
-
-source /vagrant/script/checkout
-update_development_environment
 EOF
 
 
