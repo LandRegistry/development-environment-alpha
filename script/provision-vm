@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-FIG_VERSION='0.5.1'
-
 echo "Adding repositories"
 
 # Java
@@ -23,7 +21,7 @@ echo "Updating repositories"
 apt-get update -qq
 
 echo "Setting up core linux tools"
-apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 virtualenvwrapper
+apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev virtualenvwrapper
 
 echo "Setting up docker"
 apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0 
@@ -34,6 +32,7 @@ stop docker
 start docker
 
 echo "Installing fig"
+FIG_VERSION='0.5.1'
 curl -L -s https://github.com/orchardup/fig/releases/download/$FIG_VERSION/linux > /usr/local/bin/fig
 chmod +x /usr/local/bin/fig
 
@@ -47,7 +46,7 @@ gem install foreman
 gem install sass
 
 echo "Installing dependencies"
-apt-get install -qy postgresql-9.3 elasticsearch redis-server
+apt-get install -qy postgresql-9.3 postgresql-server-dev-9.3 elasticsearch redis-server
 
 echo "Configuring user environment"
 WORKON_HOME=/home/vagrant/land-registry-python-venvs

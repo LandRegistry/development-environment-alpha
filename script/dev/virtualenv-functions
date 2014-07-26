@@ -21,12 +21,12 @@ function create_virtual_env {
 	if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
 		echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
 		mkvirtualenv -a ${PWD} -r /vagrant/script/dev/venv-requirements.txt ${app_name}
-	else
-		echo "Activating virtual envrionment [${app_name}]"
-		source ${WORKON_HOME}/${app_name}/bin/activate
-		echo "Installing core requirements in virtual envrionment [${app_name}]"
-		pip install -r /vagrant/script/dev/venv-requirements.txt
 	fi
+	
+	echo "Activating virtual envrionment [${app_name}]"
+	source ${WORKON_HOME}/${app_name}/bin/activate
+	echo "Installing core requirements in virtual envrionment [${app_name}]"
+	pip install -r /vagrant/script/dev/venv-requirements.txt
 }
 
 function remove_virtual_env {
