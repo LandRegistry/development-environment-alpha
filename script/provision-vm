@@ -68,16 +68,24 @@ bash_profile=/home/vagrant/.bash_profile
 rm -rf ${WORKON_HOME}
 mkdir -p ${WORKON_HOME}
 
+chown -R vagrant:vagrant /home/vagrant
+
 cat <<EOF > ${bash_profile}
 export WORKON_HOME=${WORKON_HOME}
 export PATH=/vagrant/script/dev/bin:${PATH}
 
-#source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 alias ls="ls -F"
 cd /vagrant
+
+if [[ ! -d ./apps ]] ; then
+	echo "Bootstrapping environment"
+	lr-bootstrap
+fi
+
 EOF
 
-chown -R vagrant:vagrant /home/vagrant
+
 
 
 

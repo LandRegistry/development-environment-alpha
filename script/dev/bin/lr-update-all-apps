@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#set -x
+
 set -e
 
 case `uname` in
@@ -21,3 +23,16 @@ case `uname` in
 		exit 1
 	;;
 esac
+
+source /vagrant/script/checkout
+
+update_development_environment
+ 
+apps_and_ports=`cat /vagrant/script/apps | grep -v \# | grep -v '^\s*$'`
+
+for app_and_port in ${apps_and_ports}; do
+	app=`echo ${app_and_port} | cut -d':' -f1`
+	port=`echo ${app_and_port} | cut -d':' -f2`
+
+	update_app ${app}
+done

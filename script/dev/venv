@@ -1,3 +1,0 @@
-source dev/configure
-
-workon ${app_name}
