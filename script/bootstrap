@@ -4,7 +4,6 @@
 #set -x
 set -e
 
-source /vagrant/script/dev/configure
 source /vagrant/script/checkout
  
 apps_and_ports=`cat script/apps | grep -v \# | grep -v '^\s*$'`

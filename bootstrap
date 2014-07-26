@@ -2,6 +2,19 @@
 
 set -e
 
-source script/check-os
+case `uname` in
+	Linux)
+	;;
 
-script/bootstrap $@
+	*)
+		echo
+		echo
+		echo "You need to be running in your vagrant virtual machine to run this."
+		echo
+		echo "Run vagrant ssh from the root directory of the development environment and then re-run this script"
+		echo
+		exit 1
+	;;
+esac
+
+/vagrant/script/bootstrap $@

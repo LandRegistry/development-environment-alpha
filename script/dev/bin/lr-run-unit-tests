@@ -4,14 +4,11 @@
 #set -x
 set -e
 
-source /vagrant/script/dev/configure
 source /vagrant/script/dev/virtualenv-functions
 
 if [[ -d tests ]] ; then
     create_virtual_env
     install_requirements
-    install_test_requirements
-
     
     if [[ -z ${SETTINGS} ]] ; then
     	echo "Configuring SETTINGS to be config.TestConfig"

@@ -1,11 +1,14 @@
 #!/bin/bash
 
+
+set -e
 source /vagrant/script/check-os
 
-
-if [[ -f dev/port ]] ; then
- 	port=`cat dev/port`
- 	echo "Setting HTTP port to ${port}"
- 	export PORT=${port}
+if [[ ! -d /vagrant/apps ]] ; then
+	current=`pwd`
+	cd /vagrant
+	./bootstrap
+	cd ${current}
 fi
+
 

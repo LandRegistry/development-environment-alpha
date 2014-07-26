@@ -10,9 +10,7 @@ function install_requirements {
 	if [[ -f ./requirements.txt ]] ; then
 		pip install -r ./requirements.txt
 	fi 
-}
 
-function install_test_requirements {
 	if [[ -f ./requirements_test.txt ]] ; then
 		pip install -r ./requirements_test.txt
 	fi 

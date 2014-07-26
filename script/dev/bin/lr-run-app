@@ -4,24 +4,22 @@
 #set -x
 set -e
 
-script_to_run=${@}
-
-if [[ -z ${script_to_run} ]] ; then
-	if [[ -f run.sh ]] ; then	
-		echo "Defaulting to run.sh as startup script"
-		script_to_run="run.sh"
-	else
-		echo "You haven't supplied a script to run and there is no run.sh in your project"
-		echo "I don't know what you want me to start"
-		exit 1
-	fi
+if [[ ! -f run.sh ]] ; then		
+		echo
+		echo "You haven't supplied an application name and there is no run.sh in the current directory [`pwd`]"
+		echo "I don't know what applications you want me to start!"
+		echo
+		echo "Either run this script from an application directory in /vagrant/apps"
+		echo "or pass in application names by executing" 
+		echo
+		echo "lr-run-app app1 app2 app3"
+		echo
+		exit 0 # Not necessarily an error, some apps are not auto-startable
 fi
 
-source /vagrant/script/dev/configure
 source /vagrant/script/dev/virtualenv-functions
 
 create_virtual_env
-workon ${app_name}
 install_requirements
 
 # TODO: MW - tech debt --
@@ -30,5 +28,6 @@ install_requirements
 # Until we've sorted out the apps we'll disable -e here
 
 set +o errexit
-. ${script_to_run}
+source run.sh
+deactivate
 set -e
