@@ -4,9 +4,6 @@
 #set -x
 set -e
 
-pyenv global 2.7.8
-pyenv virtualenvwrapper
-
 source /vagrant/script/dev/configure
 source /vagrant/script/dev/virtualenv-functions
 
@@ -16,7 +13,7 @@ if [[ -d tests ]] ; then
     install_test_requirements
 
     
-    if [[ -z SETTINGS ]] ; then
+    if [[ -z ${SETTINGS} ]] ; then
     	echo "Configuring SETTINGS to be config.TestConfig"
     	echo "Please ensure you have a config.TestConfig in your project"
     	export SETTINGS="config.TestConfig"

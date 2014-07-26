@@ -37,7 +37,9 @@ function create_virtual_env {
 function remove_virtual_env {
 	if [[ -d ${WORKON_HOME}/${app_name} ]] ; then
 		echo "Removing python virtual env for ${app_name} in ${WORKON_HOME}"
+		set +o errexit
 		rmvirtualenv ${app_name}
+		set -e
 	fi
 }
 
