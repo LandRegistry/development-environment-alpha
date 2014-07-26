@@ -59,7 +59,7 @@ EOF
 service postgresql restart
 
 set +o errexit
-sudo -u postgres createuser -sw vagrant
+sudo -u postgres createuser -w vagrant
 set -e
 
 echo "Configuring user environment"
@@ -83,6 +83,8 @@ if [[ ! -d ./apps ]] ; then
 	lr-bootstrap
 fi
 
+source /vagrant/script/checkout
+update_development_environment
 EOF
 
 
