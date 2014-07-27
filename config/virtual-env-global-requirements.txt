@@ -1,2 +1,8 @@
+# This requirements file will be used by the development environment to install requirements globally in all
+# virtual environments for all applications. Modules should be added in here that are a requirement for the
+# development environment to run, for example pytest.
+#
+# We should NOT add genunine application dependencies here, or anything that is required for the apps to run.
+
 pytest==2.5.2
 pytest-cov==1.7.0

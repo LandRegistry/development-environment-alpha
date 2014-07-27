@@ -4,6 +4,7 @@ set -e
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
 apps_and_ports=`cat /vagrant/config/apps | grep -v \# | grep -v '^\s*$'`
+DEV_ENV_REQUIREMENTS=/vagrant/config/virtual-env-global-requirements.txt
 
 function get_port_for_app {
   local app=$1 
@@ -47,11 +48,12 @@ function update_development_environment {
 
 function update_submodules_for_app {
   local app=$1
+  local app_dir=/vagrant/apps/${app}
 
-  if [[ -f /vagrant/apps/${app}/.gitmodules ]] ; then
+  if [[ -f ${app_dir}/.gitmodules ]] ; then
       echo "Initialising git submodule for ${app}"
-      git -C /vagrant/apps/${app} submodule init
-      git -C /vagrant/apps/${app} submodule update
+      git -C ${app_dir} submodule init
+      git -C ${app_dir} submodule update
   fi
 }
 
@@ -95,7 +97,7 @@ function create_virtual_env {
   if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
     echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
     set +o errexit
-    mkvirtualenv -a ${PWD} -r /vagrant/script/dev/venv-requirements.txt ${app_name}
+    mkvirtualenv -a ${PWD} -r ${DEV_ENV_REQUIREMENTS} ${app_name}
     set -e
   fi
   
@@ -104,7 +106,7 @@ function create_virtual_env {
   workon ${app_name}
   set -e
   echo "Installing core requirements in virtual envrionment [${app_name}]"
-  pip install -r /vagrant/script/dev/venv-requirements.txt
+  pip install -r ${DEV_ENV_REQUIREMENTS}
 }
 
 function remove_virtual_env {
