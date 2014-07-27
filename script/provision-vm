@@ -59,7 +59,8 @@ EOF
 service postgresql restart
 
 set +o errexit
-sudo -u postgres createuser -w vagrant
+# TODO: I'm creating vagrant as a superuser here, but don't really think we need this
+sudo -u postgres createuser -sw vagrant
 set -e
 
 echo "Configuring user environment"

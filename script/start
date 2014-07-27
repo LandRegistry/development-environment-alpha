@@ -10,8 +10,8 @@ if [[ -z ${@} ]] ; then
 fi
 
 set +o errexit
-workon $@
-cd /vagrant/apps/$@
-PORT=$(get_port_for_app $1) source run.sh | tee -a /vagrant/logs/${@}.log 2>&1
-deactivate
+source ${WORKON_HOME}/${@}/bin/activate
+cd /vagrant/apps/$1
+log=/vagrant/logs/$1.log
+SETTINGS='config.DevelopmentConfig' PORT=$(get_port_for_app $1) . run.sh 2> >(tee -a $log)
 set -e
