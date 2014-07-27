@@ -35,9 +35,7 @@ function is_valid_app {
 }
 
 function get_directory_for_app {
-  local app=$1
-
-  
+  local app=$1  
 }
 
 function update_development_environment {
@@ -80,14 +78,14 @@ function update_app {
 }
 
 function install_requirements {
-  local app_name=$1
+  local app_dir="/vagrant/apps/${1}"
 
-  if [[ -f ./requirements.txt ]] ; then
-    pip install -r ./requirements.txt
+  if [[ -f ${app_dir}/requirements.txt ]] ; then
+    pip install -r ${app_dir}/requirements.txt
   fi 
 
-  if [[ -f ./requirements_test.txt ]] ; then
-    pip install -r ./requirements_test.txt
+  if [[ -f ${app_dir}/requirements_test.txt ]] ; then
+    pip install -r ${app_dir}/requirements_test.txt
   fi 
 }
 
@@ -118,4 +116,25 @@ function remove_virtual_env {
     rmvirtualenv ${app_name}
     set -e
   fi
+}
+
+function check_all_apps_are_valid {
+  local apps_to_start=(${@})
+
+  for app_to_start in ${apps_to_start}; do
+    if [[ $(is_valid_app ${apps_to_start}) != 1 ]] ; then
+      echo "Can't find an app called ${apps_to_start} in the configuration file in /vagrant/config/apps"
+      exit 1
+    fi
+  done
+}
+
+function configure_virtual_env_for_apps {
+  local apps_to_start=(${@})
+
+  for app_to_start in ${apps_to_start}; do
+    echo "Configuring virtual environment for ${apps_to_start}"
+    create_virtual_env ${apps_to_start}
+    install_requirements ${app_to_start}  
+  done
 }

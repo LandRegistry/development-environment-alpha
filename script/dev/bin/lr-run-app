@@ -12,8 +12,7 @@ case `uname` in
 		fi
 	;;
 
-	*)
-		
+	*)	
 		echo
 		echo
 		echo "You need to be running in your vagrant virtual machine to run this."
@@ -24,28 +23,31 @@ case `uname` in
 	;;
 esac
 
-if [[ ! -f run.sh ]] ; then		
-		echo
-		echo "You haven't supplied an application name and there is no run.sh in the current directory [`pwd`]"
-		echo "I don't know what applications you want me to start!"
-		echo
-		echo "Either run this script from an application directory in /vagrant/apps"
-		echo "or pass in application names by executing" 
-		echo
-		echo "lr-run-app app1 app2 app3"
-		echo
-		exit 0 # Not necessarily an error, some apps are not auto-startable
-fi
-
 source /vagrant/script/checkout
 
-if [[ $(is_valid_app $1) != 1 ]] ; then
-	echo "Can't find an app called $1 in the configuration file in /vagrant/config/apps"
-	exit 1
+args=(${@})
+first_arg=${args[0]}
+apps_to_start=()
+
+if [ -z ${first_arg} ]; then
+	# We've not been called with any arguments. Let's see if we're in an
+	# application directory with a run.sh
+
+	if [ -f ./run.sh ]; then
+	  apps_to_start=$(basename `pwd`)
+	else
+	  echo 
+	  echo "You've called this script without specifiy which apps you need and I can't find a run.sh" 
+	  echo "in the current directory [`pwd`]" 
+	  echo 
+	  echo "You either need to specify some apps, or lr-run-app from the base directory of an app with a run.sh" 
+	  echo 
+	  exit 1
+	fi
 fi
 
-create_virtual_env $1
-install_requirements
+check_all_apps_are_valid ${app_to_start}
+configure_virtual_env_for_apps ${apps_to_start}
 
 # TODO: MW - tech debt --
 # Currently our run.sh scripts in the apps don't always work with set -e in place
