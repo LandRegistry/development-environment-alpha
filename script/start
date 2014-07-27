@@ -1,13 +1,17 @@
 #!/bin/bash
 
-# Uncomment this line to enable debug
-#set -x
+set -e
 
-if [[ -z ${@} ]]
-	then
-		echo "No application specified to start!" 
-		exit 1
-	fi
+source /vagrant/script/checkout	
 
-cd apps/$@
-./dev/run-app
+if [[ -z ${@} ]] ; then
+	echo "No application specified to start!" 
+	exit 1
+fi
+
+set +o errexit
+workon $@
+cd /vagrant/apps/$@
+PORT=$(get_port_for_app $1) source run.sh
+deactivate
+set -e

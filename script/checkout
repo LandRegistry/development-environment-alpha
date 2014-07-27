@@ -156,5 +156,6 @@ function configure_virtual_env_for_apps {
     echo "Configuring virtual environment for ${app_to_start}"
     create_virtual_env ${app_to_start}
     install_requirements ${app_to_start}  
+    deactivate
   done
 }

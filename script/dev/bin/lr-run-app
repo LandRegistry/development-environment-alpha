@@ -25,28 +25,35 @@ esac
 
 source /vagrant/script/checkout
 
-first_arg=$@[0]
-
-if [ -z $first_arg ]; then
+if [ -z $@ ]; then
 	# We've not been called with any arguments. Let's see if we're in an
 	# application directory with a run.sh
 
 	if [ -f ./run.sh ]; then
-	  	apps_to_start=$(basename `pwd`)
+	  	app_to_start=$(basename `pwd`)
+	  	check_all_apps_are_valid $app_to_start
+		configure_virtual_env_for_apps $app_to_start
+		/vagrant/script/start $app_to_start
 	else
 		die_cant_find_any_apps
 	fi
+else
+	check_all_apps_are_valid $@
+	configure_virtual_env_for_apps $@
+
+	rm -f /vagrant/Procfile
+
+	for app in $@; do
+		run=/vagrant/apps/${app}/run.sh
+
+		if [[ -f ${run} ]]
+	 	then
+	 		echo "Merging global foreman procfile for ${app}"
+	 		echo "${app}: /vagrant/script/start ${app}" >> /vagrant/Procfile
+	 	else
+	 		echo "There is not a run.sh present in ${app} so I'm not going to start it for you"
+		fi
+	done
+
+	foreman start
 fi
-
-check_all_apps_are_valid $@
-configure_virtual_env_for_apps $@
-
-# TODO: MW - tech debt --
-# Currently our run.sh scripts in the apps don't always work with set -e in place
-# because we're not running proper database migrations.
-# Until we've sorted out the apps we'll disable -e here
-
-set +o errexit
-PORT=$(get_port_for_app $1) source run.sh
-deactivate
-set -e
