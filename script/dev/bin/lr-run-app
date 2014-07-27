@@ -50,11 +50,16 @@ else
 		echo "Installing dependencies for virtual environment $app"
 		configure_virtual_env_for_apps $app > /vagrant/logs/${app}.log 2>&1
 
-		if [[ -f ${run} ]]
-	 	then
-	 		echo "${app}: /vagrant/script/start ${app}" >> /vagrant/Procfile
-	 	else
-	 		echo "There is not a run.sh present in ${app} so I'm not going to start it for you"
+		if [[ -z $? ]]; then
+			echo "An error occured while creating virtual environment for ${app}"
+			cat /vagrant/logs/${app}.log
+		else
+			if [[ -f ${run} ]]
+		 	then
+		 		echo "${app}: /vagrant/script/start ${app}" >> /vagrant/Procfile
+		 	else
+		 		echo "There is not a run.sh present in ${app} so I'm not going to start it for you"
+			fi
 		fi
 	done
 
