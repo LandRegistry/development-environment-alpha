@@ -127,7 +127,7 @@ function dump_apps_and_ports {
 }
 
 function check_all_apps_are_valid {
-  for app_to_start in ${@}; do
+  for app_to_start in $@; do
     if [[ $(is_valid_app ${app_to_start}) != 1 ]] ; then
       echo
       echo "Can't find an app called [${app_to_start}] in the configuration file in /vagrant/config/apps"
@@ -152,9 +152,7 @@ function die_cant_find_any_apps {
 }
 
 function configure_virtual_env_for_apps {
-  local apps_to_start=(${@})
-
-  for app_to_start in ${apps_to_start}; do
+  for app_to_start in $@; do
     echo "Configuring virtual environment for ${app_to_start}"
     create_virtual_env ${app_to_start}
     install_requirements ${app_to_start}  

@@ -25,10 +25,9 @@ esac
 
 source /vagrant/script/checkout
 
-apps_to_start=(${@})
-first_arg=${apps_to_start[0]}
+first_arg=$@[0]
 
-if [ -z ${first_arg} ]; then
+if [ -z $first_arg ]; then
 	# We've not been called with any arguments. Let's see if we're in an
 	# application directory with a run.sh
 
@@ -39,8 +38,8 @@ if [ -z ${first_arg} ]; then
 	fi
 fi
 
-check_all_apps_are_valid ${apps_to_start}
-configure_virtual_env_for_apps ${apps_to_start}
+check_all_apps_are_valid $@
+configure_virtual_env_for_apps $@
 
 # TODO: MW - tech debt --
 # Currently our run.sh scripts in the apps don't always work with set -e in place
