@@ -24,10 +24,10 @@ case `uname` in
     ;;
 esac
 
-source /vagrant/script/dev/virtualenv-functions
+source /vagrant/script/checkout
 
 if [[ -d tests ]] ; then
-    create_virtual_env
+    create_virtual_env $1
     install_requirements
     
     if [[ -z ${SETTINGS} ]] ; then

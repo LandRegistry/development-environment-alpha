@@ -37,7 +37,6 @@ if [[ ! -f run.sh ]] ; then
 		exit 0 # Not necessarily an error, some apps are not auto-startable
 fi
 
-source /vagrant/script/dev/virtualenv-functions
 source /vagrant/script/checkout
 
 if [[ $(is_valid_app $1) != 1 ]] ; then
