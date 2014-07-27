@@ -12,6 +12,6 @@ fi
 set +o errexit
 workon $@
 cd /vagrant/apps/$@
-PORT=$(get_port_for_app $1) source run.sh
+PORT=$(get_port_for_app $1) source run.sh | tee -a /vagrant/logs/${@}.log 2>&1
 deactivate
 set -e

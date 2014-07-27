@@ -2,6 +2,7 @@ apps/
 Procfile
 .vagrant
 .idea/
+logs/
 concept-homepage
 concept-frontend
 concept-performance-dashboard

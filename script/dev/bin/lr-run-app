@@ -25,7 +25,7 @@ esac
 
 source /vagrant/script/checkout
 
-if [ -z $@ ]; then
+if [[ -z $@ ]]; then
 	# We've not been called with any arguments. Let's see if we're in an
 	# application directory with a run.sh
 
@@ -39,16 +39,19 @@ if [ -z $@ ]; then
 	fi
 else
 	check_all_apps_are_valid $@
-	configure_virtual_env_for_apps $@
 
 	rm -f /vagrant/Procfile
-
+	mkdir -p /vagrant/logs
+	rm -rf /vagrant/logs/*
+	
 	for app in $@; do
 		run=/vagrant/apps/${app}/run.sh
+		echo "Logging for ${app} can be found in /vagrant/logs/${app}.log"
+		echo "Installing dependencies for virtual environment $app"
+		configure_virtual_env_for_apps $app > /vagrant/logs/${app}.log 2>&1
 
 		if [[ -f ${run} ]]
 	 	then
-	 		echo "Merging global foreman procfile for ${app}"
 	 		echo "${app}: /vagrant/script/start ${app}" >> /vagrant/Procfile
 	 	else
 	 		echo "There is not a run.sh present in ${app} so I'm not going to start it for you"
