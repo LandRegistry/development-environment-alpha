@@ -25,28 +25,21 @@ esac
 
 source /vagrant/script/checkout
 
-args=(${@})
-first_arg=${args[0]}
-apps_to_start=()
+apps_to_start=(${@})
+first_arg=${apps_to_start[0]}
 
 if [ -z ${first_arg} ]; then
 	# We've not been called with any arguments. Let's see if we're in an
 	# application directory with a run.sh
 
 	if [ -f ./run.sh ]; then
-	  apps_to_start=$(basename `pwd`)
+	  	apps_to_start=$(basename `pwd`)
 	else
-	  echo 
-	  echo "You've called this script without specifiy which apps you need and I can't find a run.sh" 
-	  echo "in the current directory [`pwd`]" 
-	  echo 
-	  echo "You either need to specify some apps, or lr-run-app from the base directory of an app with a run.sh" 
-	  echo 
-	  exit 1
+		die_cant_find_any_apps
 	fi
 fi
 
-check_all_apps_are_valid ${app_to_start}
+check_all_apps_are_valid ${apps_to_start}
 configure_virtual_env_for_apps ${apps_to_start}
 
 # TODO: MW - tech debt --

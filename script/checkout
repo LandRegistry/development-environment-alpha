@@ -118,23 +118,45 @@ function remove_virtual_env {
   fi
 }
 
-function check_all_apps_are_valid {
-  local apps_to_start=(${@})
+function dump_apps_and_ports {
+  local app
 
-  for app_to_start in ${apps_to_start}; do
-    if [[ $(is_valid_app ${apps_to_start}) != 1 ]] ; then
-      echo "Can't find an app called ${apps_to_start} in the configuration file in /vagrant/config/apps"
+  for app in ${apps_and_ports}; do
+    echo ${app}
+  done
+}
+
+function check_all_apps_are_valid {
+  for app_to_start in ${@}; do
+    if [[ $(is_valid_app ${app_to_start}) != 1 ]] ; then
+      echo
+      echo "Can't find an app called [${app_to_start}] in the configuration file in /vagrant/config/apps"
+      echo
+      echo "The file currently contains:"
+      echo
+      dump_apps_and_ports
+      echo
       exit 1
     fi
   done
+}
+
+function die_cant_find_any_apps {
+  echo 
+  echo "You've called this script without specifiy which apps you need and I can't find a run.sh" 
+  echo "in the current directory [`pwd`]" 
+  echo 
+  echo "You either need to specify some apps, or lr-run-app from the base directory of an app with a run.sh" 
+  echo 
+  exit 1
 }
 
 function configure_virtual_env_for_apps {
   local apps_to_start=(${@})
 
   for app_to_start in ${apps_to_start}; do
-    echo "Configuring virtual environment for ${apps_to_start}"
-    create_virtual_env ${apps_to_start}
+    echo "Configuring virtual environment for ${app_to_start}"
+    create_virtual_env ${app_to_start}
     install_requirements ${app_to_start}  
   done
 }
