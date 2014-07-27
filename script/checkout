@@ -34,10 +34,6 @@ function is_valid_app {
   done
 }
 
-function get_directory_for_app {
-  local app=$1  
-}
-
 function update_development_environment {
   echo "Updating development environment"
   git -C /vagrant pull 
@@ -77,45 +73,31 @@ function update_app {
   fi
 }
 
-function install_requirements {
-  local app_dir="/vagrant/apps/${1}"
-
-  if [[ -f ${app_dir}/requirements.txt ]] ; then
-    pip install -r ${app_dir}/requirements.txt
-  fi 
-
-  if [[ -f ${app_dir}/requirements_test.txt ]] ; then
-    pip install -r ${app_dir}/requirements_test.txt
-  fi 
-}
-
 function create_virtual_env {
   local app_name=$1
 
   if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
     echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
     set +o errexit
-    mkvirtualenv -a ${PWD} -r ${DEV_ENV_REQUIREMENTS} ${app_name}
+    mkvirtualenv -a "/vagrant/apps/${app_name}" -r ${DEV_ENV_REQUIREMENTS} ${app_name}
     set -e
   fi
   
   echo "Activating virtual envrionment [${app_name}]"
   set +o errexit
+  #source ${WORKON_HOME}/${app_name}/bin/activate
   workon ${app_name}
   set -e
   echo "Installing core requirements in virtual envrionment [${app_name}]"
   pip install -r ${DEV_ENV_REQUIREMENTS}
-}
 
-function remove_virtual_env {
-  local app_name=$1
+  if [[ -f /vagrant/apps/${app_name}/requirements.txt ]] ; then
+    pip install -r /vagrant/apps/${app_name}/requirements.txt
+  fi 
 
-  if [[ -d ${WORKON_HOME}/${app_name} ]] ; then
-    echo "Removing python virtual env for ${app_name} in ${WORKON_HOME}"
-    set +o errexit
-    rmvirtualenv ${app_name}
-    set -e
-  fi
+  if [[ -f /vagrant/apps/${app_name}/requirements_test.txt ]] ; then
+    pip install -r /vagrant/apps/${app_name}/requirements_test.txt
+  fi 
 }
 
 function dump_apps_and_ports {
@@ -155,7 +137,6 @@ function configure_virtual_env_for_apps {
   for app_to_start in $@; do
     echo "Configuring virtual environment for ${app_to_start}"
     create_virtual_env ${app_to_start}
-    install_requirements ${app_to_start}  
     deactivate
   done
 }
