@@ -41,11 +41,11 @@ source /vagrant/script/dev/virtualenv-functions
 source /vagrant/script/checkout
 
 if [[ $(is_valid_app $1) != 1 ]] ; then
-	echo "Can't find an app called $1 in the configuration file in /vagrant/script/apps"
+	echo "Can't find an app called $1 in the configuration file in /vagrant/config/apps"
 	exit 1
 fi
 
-create_virtual_env
+create_virtual_env $1
 install_requirements
 
 # TODO: MW - tech debt --

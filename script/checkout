@@ -1,9 +1,9 @@
 #!/bin/bash
 
 set -e
+source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
-apps_and_ports=`cat /vagrant/script/apps | grep -v \# | grep -v '^\s*$'`
-
+apps_and_ports=`cat /vagrant/config/apps | grep -v \# | grep -v '^\s*$'`
 
 function get_port_for_app {
   local app=$1 
@@ -33,38 +33,87 @@ function is_valid_app {
   done
 }
 
+function get_directory_for_app {
+  local app=$1
+
+  
+}
+
 function update_development_environment {
   echo "Updating development environment"
   git -C /vagrant pull 
   lr-bootstrap
 }
 
-function checkout {
+function update_submodules_for_app {
   local app=$1
- 
-  if [[ ! -d /vagrant/apps/${app} ]] ; then 
-    mkdir -p /vagrant/apps/
-    git -C /vagrant/apps/ clone git@github.com:landregistry/${app}.git
 
-    if [[ -f /vagrant/apps/${app}/.gitmodules ]] ; then
+  if [[ -f /vagrant/apps/${app}/.gitmodules ]] ; then
       echo "Initialising git submodule for ${app}"
       git -C /vagrant/apps/${app} submodule init
       git -C /vagrant/apps/${app} submodule update
-    fi
+  fi
+}
+
+function checkout {
+  local app=$1
+  local app_dir=/vagrant/apps/${app}
+
+  if [[ ! -d ${app_dir} ]] ; then 
+    mkdir -p /vagrant/apps/
+    git -C /vagrant/apps/ clone git@github.com:landregistry/${app}.git
+    update_submodules_for_app ${app}
   fi
 }
 
 function update_app {
   local app=$1
-    
-  if [ -d /vagrant/apps/${app} ] ; then
+  local app_dir=/vagrant/apps/${app}
+
+  if [ -d ${app_dir} ] ; then
     echo "Refreshing application ${app}"
-    git -C /vagrant/apps/${app} pull
-    
-    if [[ -f /vagrant/apps/${app}/.gitmodules ]] ; then
-      echo "Initialising git submodule for ${app}"
-      git -C /vagrant/apps/${app} submodule init
-      git -C /vagrant/apps/${app} submodule update
-    fi
+    git -C ${app_dir} pull
+    update_submodules_for_app ${app}
+  fi
+}
+
+function install_requirements {
+  local app_name=$1
+
+  if [[ -f ./requirements.txt ]] ; then
+    pip install -r ./requirements.txt
+  fi 
+
+  if [[ -f ./requirements_test.txt ]] ; then
+    pip install -r ./requirements_test.txt
+  fi 
+}
+
+function create_virtual_env {
+  local app_name=$1
+
+  if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
+    echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
+    set +o errexit
+    mkvirtualenv -a ${PWD} -r /vagrant/script/dev/venv-requirements.txt ${app_name}
+    set -e
+  fi
+  
+  echo "Activating virtual envrionment [${app_name}]"
+  set +o errexit
+  workon ${app_name}
+  set -e
+  echo "Installing core requirements in virtual envrionment [${app_name}]"
+  pip install -r /vagrant/script/dev/venv-requirements.txt
+}
+
+function remove_virtual_env {
+  local app_name=$1
+
+  if [[ -d ${WORKON_HOME}/${app_name} ]] ; then
+    echo "Removing python virtual env for ${app_name} in ${WORKON_HOME}"
+    set +o errexit
+    rmvirtualenv ${app_name}
+    set -e
   fi
 }

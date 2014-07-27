@@ -4,9 +4,9 @@
 set -e
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 
-export app_name=`basename ${PWD}` 
-
 function install_requirements {
+	local app_name=$1
+
 	if [[ -f ./requirements.txt ]] ; then
 		pip install -r ./requirements.txt
 	fi 
@@ -17,6 +17,8 @@ function install_requirements {
 }
 
 function create_virtual_env {
+	local app_name=$1
+
 	if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
 		echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
 		set +o errexit
@@ -33,6 +35,8 @@ function create_virtual_env {
 }
 
 function remove_virtual_env {
+	local app_name=$1
+
 	if [[ -d ${WORKON_HOME}/${app_name} ]] ; then
 		echo "Removing python virtual env for ${app_name} in ${WORKON_HOME}"
 		set +o errexit
