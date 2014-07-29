@@ -21,7 +21,7 @@ echo "Updating repositories"
 apt-get update -qq
 
 echo "Setting up core linux tools"
-apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev ruby-dev virtualenvwrapper phantomjs
+apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev ruby-dev virtualenvwrapper phantomjs 
 
 echo "Setting up docker"
 apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0 

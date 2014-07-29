@@ -64,7 +64,6 @@ else
 		fi
 	done
 
-
 	if [[ -f /vagrant/Procfile ]]; then
 		foreman start -f /vagrant/Procfile
 	fi

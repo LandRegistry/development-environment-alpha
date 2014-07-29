@@ -23,4 +23,9 @@ esac
 
 source /vagrant/script/checkout
 lr-bootstrap
-lr-run-app $(all_apps)
+current_dir=`pwd`
+
+for app in $(all_apps); do
+	run_unit_tests_for_app ${app}
+done
+

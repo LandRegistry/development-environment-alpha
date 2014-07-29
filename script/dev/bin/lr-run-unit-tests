@@ -26,22 +26,4 @@ esac
 source /vagrant/script/checkout
 lr-bootstrap
 
-if [[ ! -d ./tests ]] ; then
-    echo "No unit tests found in directory `pwd`/tests"
-else
-    app_to_test=$(basename `pwd`)
-    check_all_apps_are_valid ${app_to_test}
-    configure_virtual_env_for_apps ${app_to_test} 
-    
-    if [[ -z ${SETTINGS} ]] ; then
-        echo "Configuring SETTINGS to be config.TestConfig"
-        echo "Please ensure you have a config.TestConfig in your project"
-        export SETTINGS="config.TestConfig"
-    fi
-
-    set +o errexit
-    workon ${app_to_test}
-    SETTINGS='config.DevelopmentConfig' PORT=$(get_port_for_app $1) py.test 
-    deactivate
-    set -e
-fi
+run_unit_tests_for_app $(basename `pwd`)

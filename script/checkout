@@ -72,6 +72,24 @@ function checkout {
   fi
 }
 
+function source_app_environment {
+  local environment=/vagrant/apps/$1/environment.sh
+
+  if [[ -f ${environment} ]]; then
+    source ${environment}
+  else
+    echo "Warning: I couldn't find an environment.sh in `pwd`"
+  fi
+}
+
+function source_app_test_environment {
+  local environment=/vagrant/apps/$1/test_environment.sh
+
+  if [[ -f ${environment} ]]; then
+    source ${environment}
+  fi
+}
+
 function update_app {
   local app=$1
   local app_dir=/vagrant/apps/${app}
@@ -95,7 +113,6 @@ function create_virtual_env {
   
   echo "Activating virtual envrionment [${app_name}]"
   set +o errexit
-  #source ${WORKON_HOME}/${app_name}/bin/activate
   workon ${app_name}
   set -e
   echo "Installing core requirements in virtual envrionment [${app_name}]"
@@ -133,24 +150,46 @@ function check_all_apps_are_valid {
   done
 }
 
-
 function run_unit_tests_for_app {
-  if [[ -d tests ]] ; then
-    configure_virtual_env_for_apps $app
+  local app_to_test=$1
+  current_dir=`pwd`
+  cd /vagrant/apps/${app_to_test}
+
+  if [[ ! -d ./tests ]] ; then
+    echo "No unit tests found for application ${app_to_test}"
+  else
+    echo "============================================================="
+    echo            RUNNING TESTS FOR ${app_to_test}
+    echo "-------------------------------------------------------------" 
+
+    cd /vagrant/apps/${app_to_test}  
+    check_all_apps_are_valid ${app_to_test}
     
+    set +o errexit
+    configure_virtual_env_for_apps ${app_to_test} > /vagrant/logs/venv_setup_${app}.log 
+    
+    if [[ -z $? ]]; then
+      echo "Error setting up virtual environment"
+      cat /vagrant/logs/venv_setup_${app}.log 
+      exit 1
+    fi
+    set -e
+
     if [[ -z ${SETTINGS} ]] ; then
-      echo "Configuring SETTINGS to be config.TestConfig"
-      echo "Please ensure you have a config.TestConfig in your project"
-      export SETTINGS="config.TestConfig"
+        export SETTINGS="config.TestConfig"
     fi
 
-    py.test
-  else
-    echo "No unit tests found in directory ${app_name}"
-    echo 
-    echo "You need to run this in a directory containing an application (normally /vagrant/apps/<app-name>)"
-    echo "or specify an app name: run-unit-tests <app-name>"
+    source_app_environment $app_to_test
+    source_app_test_environment $app_to_test
+    
+    set +o errexit
+    workon ${app_to_test}
+    SETTINGS='config.DevelopmentConfig' PORT=$(get_port_for_app $1) py.test 
+    deactivate
+    set -e
   fi
+
+  cd ${current_dir}
 }
 
 function die_if_procfile_is_present {
@@ -174,7 +213,6 @@ function die_if_procfile_is_present {
 }
 
 function remove_procfile_on_exit {
-    echo "Stopping apps & removing Procfile"
     rm -f /vagrant/Procfile
 }
 

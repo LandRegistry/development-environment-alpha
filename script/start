@@ -11,6 +11,7 @@ fi
 
 set +o errexit
 workon $1
+source_app_environment $1
 SETTINGS='config.DevelopmentConfig' PORT=$(get_port_for_app $1) . run.sh 2> >(tee -a /vagrant/logs/${1}.log)
 deactivate
 set -e
