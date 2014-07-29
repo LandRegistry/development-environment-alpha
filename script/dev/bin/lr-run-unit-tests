@@ -42,5 +42,6 @@ else
     set +o errexit
     workon ${app_to_test}
     SETTINGS='config.DevelopmentConfig' PORT=$(get_port_for_app $1) py.test 
+    deactivate
     set -e
 fi
