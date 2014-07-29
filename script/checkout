@@ -123,6 +123,26 @@ function check_all_apps_are_valid {
   done
 }
 
+
+function run_unit_tests_for_app {
+  if [[ -d tests ]] ; then
+    configure_virtual_env_for_apps $app
+    
+    if [[ -z ${SETTINGS} ]] ; then
+      echo "Configuring SETTINGS to be config.TestConfig"
+      echo "Please ensure you have a config.TestConfig in your project"
+      export SETTINGS="config.TestConfig"
+    fi
+
+    py.test
+  else
+    echo "No unit tests found in directory ${app_name}"
+    echo 
+    echo "You need to run this in a directory containing an application (normally /vagrant/apps/<app-name>)"
+    echo "or specify an app name: run-unit-tests <app-name>"
+  fi
+}
+
 function die_if_procfile_is_present {
   if [[ -f /vagrant/Procfile ]]; then
     echo

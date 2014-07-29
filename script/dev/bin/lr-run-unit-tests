@@ -13,7 +13,6 @@ case `uname` in
     ;;
 
     *)
-        
         echo
         echo
         echo "You need to be running in your vagrant virtual machine to run this."
@@ -25,21 +24,23 @@ case `uname` in
 esac
 
 source /vagrant/script/checkout
+lr-bootstrap
 
-if [[ -d tests ]] ; then
-    create_virtual_env $1
-    install_requirements
+if [[ ! -d ./tests ]] ; then
+    echo "No unit tests found in directory `pwd`/tests"
+else
+    app_to_test=$(basename `pwd`)
+    check_all_apps_are_valid ${app_to_test}
+    configure_virtual_env_for_apps ${app_to_test} 
     
     if [[ -z ${SETTINGS} ]] ; then
-    	echo "Configuring SETTINGS to be config.TestConfig"
-    	echo "Please ensure you have a config.TestConfig in your project"
-    	export SETTINGS="config.TestConfig"
+        echo "Configuring SETTINGS to be config.TestConfig"
+        echo "Please ensure you have a config.TestConfig in your project"
+        export SETTINGS="config.TestConfig"
     fi
 
-    py.test
-else
-    echo "No unit tests found in directory ${app_name}"
-    echo 
-    echo "You need to run this in a directory containing an application (normally /vagrant/apps/<app-name>)"
-    echo "or specify an app name: run-unit-tests <app-name>"
+    set +o errexit
+    workon ${app_to_test}
+    SETTINGS='config.DevelopmentConfig' PORT=$(get_port_for_app $1) py.test 
+    set -e
 fi

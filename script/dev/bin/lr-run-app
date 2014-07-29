@@ -27,6 +27,7 @@ source /vagrant/script/checkout
 trap remove_procfile_on_exit EXIT
 
 lr-bootstrap
+check_all_apps_are_valid $@
 
 if [[ -z $@ ]]; then
 	# We've not been called with any arguments. Let's see if we're in an
@@ -34,7 +35,6 @@ if [[ -z $@ ]]; then
 
 	if [ -f ./run.sh ]; then
 	  	app_to_start=$(basename `pwd`)
-	  	check_all_apps_are_valid $app_to_start
 		configure_virtual_env_for_apps $app_to_start
 		/vagrant/script/start $app_to_start
 	else
@@ -42,8 +42,6 @@ if [[ -z $@ ]]; then
 	fi
 else
 	die_if_procfile_is_present
-	check_all_apps_are_valid $@
-
 	mkdir -p /vagrant/logs
 	rm -rf /vagrant/logs/*
 	
