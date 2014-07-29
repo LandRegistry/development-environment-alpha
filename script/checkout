@@ -21,6 +21,16 @@ function get_port_for_app {
   fi
 }
 
+function all_apps {
+  local apps
+
+  for app_and_port in ${apps_and_ports}; do
+    apps="`echo -n ${app_and_port} | cut -d':' -f1` ${apps}"
+  done
+
+  echo -n ${apps}
+}
+
 function is_valid_app {
   local app=$1
   local found_app_name
