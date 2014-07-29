@@ -123,6 +123,31 @@ function check_all_apps_are_valid {
   done
 }
 
+function die_if_procfile_is_present {
+  if [[ -f /vagrant/Procfile ]]; then
+    echo
+    echo "You already have a Procfile in /vagrant/Procfile which is running the following apps"
+    echo
+    for proc_definition in `cat /vagrant/Procfile | cut -d':' -f1`; do
+      echo ${proc_definition}
+    done 
+    echo
+    echo "This either means that you already have some applications running" 
+    echo "   OR"
+    echo "the applications have died leaving a Procfile behind"
+    echo
+    echo "Either stop the apps or remove the Procfile"
+    echo "DONT'T JUST REMOVE THE PROCFILE WITHOUT STOPPING THE APPS"
+    echo
+    exit 1
+  fi
+}
+
+function remove_procfile_on_exit {
+    echo "Stopping apps & removing Procfile"
+    rm -f /vagrant/Procfile
+}
+
 function die_cant_find_any_apps {
   echo 
   echo "You've called this script without specifiy which apps you need and I can't find a run.sh" 

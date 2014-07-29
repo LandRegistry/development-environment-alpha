@@ -24,6 +24,8 @@ case `uname` in
 esac
 
 source /vagrant/script/checkout
+trap remove_procfile_on_exit EXIT
+
 lr-bootstrap
 
 if [[ -z $@ ]]; then
@@ -39,9 +41,9 @@ if [[ -z $@ ]]; then
 		die_cant_find_any_apps
 	fi
 else
+	die_if_procfile_is_present
 	check_all_apps_are_valid $@
 
-	rm -f /vagrant/Procfile
 	mkdir -p /vagrant/logs
 	rm -rf /vagrant/logs/*
 	
