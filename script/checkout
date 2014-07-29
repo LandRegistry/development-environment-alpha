@@ -86,7 +86,7 @@ function update_app {
 function create_virtual_env {
   local app_name=$1
 
-  if [[ ! -d ${WORKON_HOME}/${app_name} ]] ; then
+  if [[ ! -d ${WORKON_HOME}/${app_name}/requirements.txt ]] ; then
     echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
     set +o errexit
     mkvirtualenv -a "/vagrant/apps/${app_name}" -r ${DEV_ENV_REQUIREMENTS} ${app_name}

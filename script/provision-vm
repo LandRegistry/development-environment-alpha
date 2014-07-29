@@ -21,7 +21,7 @@ echo "Updating repositories"
 apt-get update -qq
 
 echo "Setting up core linux tools"
-apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev virtualenvwrapper
+apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev ruby-dev virtualenvwrapper phantomjs
 
 echo "Setting up docker"
 apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0 
@@ -44,6 +44,7 @@ update-java-alternatives -s java-7-oracle
 echo "Installing gems"
 gem install foreman
 gem install sass
+gem install bundler
 
 echo "Installing dependencies"
 apt-get install -qy postgresql-9.3 postgresql-server-dev-9.3 elasticsearch redis-server
@@ -62,6 +63,10 @@ set +o errexit
 # TODO: I'm creating vagrant as a superuser here, but don't really think we need this
 sudo -u postgres createuser -sw vagrant
 set -e
+
+echo "Starting elasticsearch"
+sudo update-rc.d elasticsearch defaults 95 10
+sudo /etc/init.d/elasticsearch start
 
 echo "Configuring user environment"
 WORKON_HOME=/home/vagrant/land-registry-python-venvs
