@@ -179,15 +179,15 @@ function run_unit_tests_for_app {
       exit 1
     fi
 
+    set +o errexit
+    workon ${app_to_test}
+
     source_app_environment $app_to_test
     source_app_test_environment $app_to_test
 
-    if [[ -z ${SETTINGS} ]] ; then
+     if [[ -z ${SETTINGS} ]] ; then
         export SETTINGS="config.TestConfig"
-    fi
-
-    set +o errexit
-    workon ${app_to_test}
+     fi
     PORT=$(get_port_for_app $1) py.test
     deactivate
     set -e
