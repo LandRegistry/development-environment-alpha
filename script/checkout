@@ -79,8 +79,6 @@ function source_app_environment {
     set +o errexit
     source ${environment}
     set -e
-  else
-    echo "Warning: I couldn't find an environment.sh in `pwd`"
   fi
 }
 
@@ -156,6 +154,9 @@ function check_all_apps_are_valid {
 
 function run_unit_tests_for_app {
   local app_to_test=$1
+
+  check_all_apps_are_valid ${app_to_test}
+
   current_dir=`pwd`
   cd /vagrant/apps/${app_to_test}
 
@@ -188,7 +189,7 @@ function run_unit_tests_for_app {
     
     set +o errexit
     workon ${app_to_test}
-    SETTINGS='config.DevelopmentConfig' PORT=$(get_port_for_app $1) py.test 
+    PORT=$(get_port_for_app $1) py.test
     deactivate
     set -e
   fi
