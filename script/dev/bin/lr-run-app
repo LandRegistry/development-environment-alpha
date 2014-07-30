@@ -44,7 +44,7 @@ else
 	trap remove_procfile_on_exit EXIT SIGINT SIGTERM
 	mkdir -p /vagrant/logs
 	rm -rf /vagrant/logs/*
-	
+
 	for app in $@; do
 		run=/vagrant/apps/${app}/run.sh
 		echo "Logging for ${app} can be found in /vagrant/logs/${app}.log"

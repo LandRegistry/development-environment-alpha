@@ -83,7 +83,7 @@ function source_app_environment {
 }
 
 function source_app_test_environment {
-  local environment=/vagrant/apps/$1/test_environment.sh
+  local environment=/vagrant/apps/$1/environment_test.sh
 
   if [[ -f ${environment} ]]; then
     set +o errexit
@@ -178,15 +178,14 @@ function run_unit_tests_for_app {
       cat /vagrant/logs/venv_setup_${app}.log 
       exit 1
     fi
-    set -e
+
+    source_app_environment $app_to_test
+    source_app_test_environment $app_to_test
 
     if [[ -z ${SETTINGS} ]] ; then
         export SETTINGS="config.TestConfig"
     fi
 
-    source_app_environment $app_to_test
-    source_app_test_environment $app_to_test
-    
     set +o errexit
     workon ${app_to_test}
     PORT=$(get_port_for_app $1) py.test
