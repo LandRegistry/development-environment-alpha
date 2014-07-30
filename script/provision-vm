@@ -21,10 +21,10 @@ echo "Updating repositories"
 apt-get update -qq
 
 echo "Setting up core linux tools"
-apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev ruby-dev virtualenvwrapper phantomjs 
+apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev ruby-dev virtualenvwrapper phantomjs
 
 echo "Setting up docker"
-apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0 
+apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0
 
 echo 'export DOCKER_OPTS="-H unix:///var/run/docker.sock -H tcp://0.0.0.0:4243"' > /etc/default/docker
 echo 'export DOCKER_HOST=tcp://0.0.0.0:4243' > /home/vagrant/.bash_profile
@@ -90,7 +90,4 @@ if [[ ! -d ./apps ]] ; then
 fi
 EOF
 
-
-
-
-
+echo "0.0.0.0  lr-dev" >> /etc/hosts
