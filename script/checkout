@@ -76,7 +76,9 @@ function source_app_environment {
   local environment=/vagrant/apps/$1/environment.sh
 
   if [[ -f ${environment} ]]; then
+    set +o errexit
     source ${environment}
+    set -e
   else
     echo "Warning: I couldn't find an environment.sh in `pwd`"
   fi
@@ -86,7 +88,9 @@ function source_app_test_environment {
   local environment=/vagrant/apps/$1/test_environment.sh
 
   if [[ -f ${environment} ]]; then
+    set +o errexit
     source ${environment}
+    set -e
   fi
 }
 
