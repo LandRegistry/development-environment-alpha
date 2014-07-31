@@ -152,6 +152,10 @@ function check_all_apps_are_valid {
   done
 }
 
+function find_python_packages {
+  echo `find  .  -type f -name __init__.py -print0 | xargs -0 -n1 dirname | grep -v tests | xargs basename`
+}
+
 function run_unit_tests_for_app {
   local app_to_test=$1
 
@@ -185,10 +189,11 @@ function run_unit_tests_for_app {
     source_app_environment $app_to_test
     source_app_test_environment $app_to_test
 
-     if [[ -z ${SETTINGS} ]] ; then
-        export SETTINGS="config.TestConfig"
-     fi
-    PORT=$(get_port_for_app $1) py.test
+    if [[ -z ${SETTINGS} ]] ; then
+      export SETTINGS="config.TestConfig"
+    fi
+
+    PORT=$(get_port_for_app $1) py.test --cov $(find_python_packages) tests/
     deactivate
     set -e
   fi
