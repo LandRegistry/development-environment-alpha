@@ -5,11 +5,13 @@ Vagrant.configure("2") do |config|
   config.vm.network "private_network", :ip => "172.16.42.43"
   config.vm.provision :shell, :path => 'script/provision-vm'
 
+  config.vm.synced_folder ".aptget", "/var/cache/apt/archives/"
+
   config.vm.provider :virtualbox do |vb|
     vb.customize ['modifyvm', :id, '--memory', ENV['VM_MEMORY'] || 4096]
     vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
     vb.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
-    vb.customize ["modifyvm", :id, "--cpus", ENV['VM_CPUS'] || 4]  
+    vb.customize ["modifyvm", :id, "--cpus", ENV['VM_CPUS'] || 4]
   end
 
   vagrantfile_extra = "#{ENV['VAGRANT_CWD']}/Vagrantfile_extra.rb"

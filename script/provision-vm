@@ -42,9 +42,9 @@ apt-get install -qy oracle-java7-installer
 update-java-alternatives -s java-7-oracle
 
 echo "Installing gems"
-gem install foreman
-gem install sass
-gem install bundler
+gem install foreman --no-rdoc --no-ri
+gem install sass --no-rdoc --no-ri
+gem install bundler --no-rdoc --no-ri
 
 echo "Installing dependencies"
 apt-get install -qy postgresql-9.3 postgresql-server-dev-9.3 elasticsearch redis-server

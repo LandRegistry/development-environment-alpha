@@ -24,3 +24,6 @@ lr-docker-postgres/
 public-titles-api/
 property
 .DS_Store
+.aptget/partial
+.aptget/*.deb
+.aptget/lock
