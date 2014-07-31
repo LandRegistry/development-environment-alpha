@@ -2,6 +2,7 @@
 
 set -e
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+mkdir -p /vagrant/logs
 
 apps_and_ports=`cat /vagrant/config/apps | grep -v \# | grep -v '^\s*$'`
 DEV_ENV_REQUIREMENTS=/vagrant/config/virtual-env-global-requirements.txt
