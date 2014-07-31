@@ -78,7 +78,7 @@ chown -R vagrant:vagrant /home/vagrant
 
 cat <<EOF > ${bash_profile}
 export WORKON_HOME=${WORKON_HOME}
-export PATH=/vagrant/script/dev/bin:${PATH}
+export PATH=/vagrant/script/bin:${PATH}
 
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 alias ls="ls -F"

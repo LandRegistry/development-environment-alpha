@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#set -x
 set -e
 
 case `uname` in
@@ -10,7 +11,8 @@ case `uname` in
 		fi
 	;;
 
-	*)	
+	*)
+		
 		echo
 		echo
 		echo "You need to be running in your vagrant virtual machine to run this."
@@ -21,11 +23,11 @@ case `uname` in
 	;;
 esac
 
-source /vagrant/script/checkout
-lr-bootstrap
-current_dir=`pwd`
+source /vagrant/script/dev-env-functions
+update_development_environment
+ 
+for app_and_port in ${apps_and_ports}; do
+	app=`echo ${app_and_port} | cut -d':' -f1`
 
-for app in $(all_apps); do
-	run_unit_tests_for_app ${app}
+	update_app ${app}
 done
-

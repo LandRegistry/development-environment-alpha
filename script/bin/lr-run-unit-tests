@@ -23,7 +23,6 @@ case `uname` in
     ;;
 esac
 
-source /vagrant/script/checkout
+source /vagrant/script/dev-env-functions
 lr-bootstrap
-
 run_unit_tests_for_app $(basename `pwd`)

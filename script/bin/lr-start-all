@@ -21,6 +21,6 @@ case `uname` in
 	;;
 esac
 
-source /vagrant/script/checkout
+source /vagrant/script/dev-env-functions
 lr-bootstrap
 lr-run-app $(all_apps)

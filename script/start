@@ -2,7 +2,7 @@
 
 set -e
 
-source /vagrant/script/checkout	
+source /vagrant/script/dev-env-functions
 
 if [[ -z ${@} ]] ; then
 	echo "No application specified to start!" 
