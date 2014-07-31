@@ -2,7 +2,6 @@
 
 # Uncomment the next line if you want to run this script with debug
 #set -x
-
 set -e
 
 case `uname` in
@@ -25,16 +24,21 @@ case `uname` in
     ;;
 esac
 
-source dev/configure
-source dev/virtualenv-functions
+source /vagrant/script/dev-env-functions
+cd /vagrant
+
+echo "Removing logs"
+rm -rf /vagrant/logs/*
 
 echo "Removing compiled python files"
-find . -type f -name "*pyc" | xargs rm
+find . -type f -name "*pyc" | xargs rm -f
 
 echo "Removing web asset cache"
 find . -type d -name ".webasset-cache" | xargs rm -rf 
 
-echo "Removing python virtual envrionment"
-remove_virtual_env
+echo "Removing python virtual envrionments"
+rm -rf /home/vagrant/land-registry-python-venvs
+
+
 
 

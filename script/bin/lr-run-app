@@ -47,9 +47,6 @@ else
 
 	for app in $@; do
 		run=/vagrant/apps/${app}/run.sh
-		echo "Logging for ${app} can be found in /vagrant/logs/${app}.log"
-		echo "Installing dependencies for virtual environment $app"
-		configure_virtual_env_for_apps $app > /vagrant/logs/${app}.log 2>&1
 
 		if [[ -z $? ]]; then
 			echo "An error occured while creating virtual environment for ${app}"
