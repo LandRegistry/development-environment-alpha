@@ -22,6 +22,7 @@ apt-get update -qq
 
 echo "Setting up core linux tools"
 apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev ruby-dev virtualenvwrapper phantomjs
+apt-get install -qy binutils libproj-dev gdal-bin libgeos-3.4.2 libproj0 libgdal1h
 
 echo "Setting up docker"
 apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0
@@ -47,7 +48,7 @@ gem install sass --no-rdoc --no-ri
 gem install bundler --no-rdoc --no-ri
 
 echo "Installing dependencies"
-apt-get install -qy postgresql-9.3 postgresql-server-dev-9.3 elasticsearch redis-server
+apt-get install -qy postgresql-9.3 postgresql-server-dev-9.3 elasticsearch redis-server postgis postgresql-contrib postgresql-9.3-postgis-2.1
 
 echo "Configuring postgres"
 cat <<EOF > /etc/postgresql/9.3/main/pg_hba.conf
