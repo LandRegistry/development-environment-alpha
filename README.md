@@ -16,7 +16,7 @@ In order to run the development environment locally you will need
 Before using the service ensure that the following line is in your hostfile on the host machine. (Normally in /etc/hosts)
 
 ```
-lr-casework lr-service lr-govuk www.gov.uk.dev.landregistryconcept.co.uk land.service.gov.uk.dev.landregistryconcept.co.uk casework.dev.landregistryconcept.co.uk
+172.16.42.43    lr-casework lr-service lr-govuk www.gov.uk.dev.landregistryconcept.co.uk land.service.gov.uk.dev.landregistryconcept.co.uk casework.dev.landregistryconcept.co.uk
 ```
 
 ## Creating the environment
