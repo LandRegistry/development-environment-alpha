@@ -12,10 +12,10 @@ if [[ -d tests ]] ; then
     install_requirements
     install_test_requirements
 
-    export SETTINGS="config.TestConfig"
-
-    echo "Configuring SETTINGS to be config.TestConfig"
-    echo "Please ensure you have a config.TestConfig in your project"
+    source ./environment_test.sh
+    
+    echo "Configuring environment_test.sh"
+    echo "Please ensure you have an environment_test.sh  your project"
     
     py.test
 else
