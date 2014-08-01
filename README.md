@@ -1,12 +1,9 @@
-Land Registry Development Environment
-=================
-
-# Overview
+## Land Registry Development Environment
 
 This repository contains the setup scripts for developers to quickly get up and running with the Land Registry codebase. By bootstrapping their developer environment from these scripts developers will be able to get all of the code repositories, run the unit tests and start the various applications that make up the land registry systems.
 
 
-# Prerequisites
+## Prerequisites
 
 In order to run the development environment locally you will need 
 
@@ -14,7 +11,7 @@ In order to run the development environment locally you will need
 * Vagrant (http://www.vagrantup.com/downloads.html)
 * git must be installed locally
 
-# Creating the environment
+## Creating the environment
 
 From the directory containing this repository run
 
@@ -30,7 +27,7 @@ vagrant ssh
 
 This will log into the machine and check out all of the applications in the */vagrant/apps* directory
 
-# Running all of the unit tests
+## Running all of the unit tests
 
 To run all of the unit tests configured in the applications simply log into the VM and run 
 
@@ -38,7 +35,7 @@ To run all of the unit tests configured in the applications simply log into the 
 lr-run-all-unit-tests
 ```
 
-# Starting up all of the applications
+## Starting up all of the applications
 
 To start up all of the applications run
 
@@ -46,7 +43,7 @@ To start up all of the applications run
 lr-start-all
 ```
 
-# If your environment becomes corrupted
+## If your environment becomes corrupted
 
 To clean out the environment and python virtual environments for all applications you can run
 
