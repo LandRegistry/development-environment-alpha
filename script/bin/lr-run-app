@@ -1,0 +1,69 @@
+#!/bin/bash
+
+#Uncomment this line if you want to debug this script
+#set -x
+set -e
+
+case `uname` in
+	Linux)
+		if [[ ! -d /vagrant ]] ; then
+			echo "You need to be running in the vagrant VM to do this"
+			exit 1
+		fi
+	;;
+
+	*)	
+		echo
+		echo
+		echo "You need to be running in your vagrant virtual machine to run this."
+		echo
+		echo "Run vagrant ssh from the root directory of the development environment and then re-run this script"
+		echo
+		exit 1
+	;;
+esac
+
+source /vagrant/script/dev-env-functions
+
+lr-bootstrap
+check_all_apps_are_valid $@
+
+if [[ -z $@ ]]; then
+	# We've not been called with any arguments. Let's see if we're in an
+	# application directory with a run.sh
+
+	if [ -f ./run.sh ]; then
+		(
+	  		app_to_start=$(basename `pwd`)
+			configure_virtual_env_for_apps $app_to_start
+			/vagrant/script/start $app_to_start
+		)
+	else
+		die_cant_find_any_apps
+	fi
+else
+	die_if_procfile_is_present
+	trap remove_procfile_on_exit EXIT SIGINT SIGTERM
+	mkdir -p /vagrant/logs
+	rm -rf /vagrant/logs/*
+
+	for app in $@; do
+		run=/vagrant/apps/${app}/run.sh
+
+		if [[ -z $? ]]; then
+			echo "An error occured while creating virtual environment for ${app}"
+			cat /vagrant/logs/${app}.log
+		else
+			if [[ -f ${run} ]]
+		 	then
+		 		echo "${app}: /vagrant/script/start ${app}" >> /vagrant/Procfile
+		 	else
+		 		echo "There is not a run.sh present in ${app} so I'm not going to start it for you"
+			fi
+		fi
+	done
+
+	if [[ -f /vagrant/Procfile ]]; then
+		foreman start -f /vagrant/Procfile
+	fi
+fi

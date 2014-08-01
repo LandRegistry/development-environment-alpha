@@ -1,0 +1,94 @@
+#!/bin/bash
+set -e
+
+echo "Adding repositories"
+
+# Java
+add-apt-repository ppa:webupd8team/java
+
+# Docker
+echo "deb https://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+
+# Redis
+sudo apt-add-repository ppa:chris-lea/redis-server
+
+# elasticsearch
+wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
+echo "deb http://packages.elasticsearch.org/elasticsearch/1.3/debian stable main" > /etc/apt/sources.list.d/elasticsearch.list
+
+echo "Updating repositories"
+apt-get update -qq
+
+echo "Setting up core linux tools"
+apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev ruby-dev virtualenvwrapper phantomjs
+apt-get install -qy binutils libproj-dev gdal-bin libgeos-3.4.2 libproj0 libgdal1h
+
+echo "Setting up docker"
+apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0
+
+echo 'export DOCKER_OPTS="-H unix:///var/run/docker.sock -H tcp://0.0.0.0:4243"' > /etc/default/docker
+echo 'export DOCKER_HOST=tcp://0.0.0.0:4243' > /home/vagrant/.bash_profile
+stop docker
+start docker
+
+echo "Installing fig"
+FIG_VERSION='0.5.1'
+curl -L -s https://github.com/orchardup/fig/releases/download/$FIG_VERSION/linux > /usr/local/bin/fig
+chmod +x /usr/local/bin/fig
+
+echo "Installing Oracle java 7"
+echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+apt-get install -qy oracle-java7-installer
+update-java-alternatives -s java-7-oracle
+
+echo "Installing gems"
+gem install foreman --no-rdoc --no-ri
+gem install sass --no-rdoc --no-ri
+gem install bundler --no-rdoc --no-ri
+
+echo "Installing dependencies"
+apt-get install -qy postgresql-9.3 postgresql-server-dev-9.3 elasticsearch redis-server postgis postgresql-contrib postgresql-9.3-postgis-2.1
+
+echo "Configuring postgres"
+cat <<EOF > /etc/postgresql/9.3/main/pg_hba.conf
+local   all             postgres                                peer
+local   all             all                                     trust
+host    all             all             127.0.0.1/32            trust
+host    all             all             ::1/128                 trust
+EOF
+
+service postgresql restart
+
+set +o errexit
+# TODO: I'm creating vagrant as a superuser here, but don't really think we need this
+sudo -u postgres createuser -sw vagrant
+set -e
+
+echo "Starting elasticsearch"
+sudo update-rc.d elasticsearch defaults 95 10
+sudo /etc/init.d/elasticsearch start
+
+echo "Configuring user environment"
+WORKON_HOME=/home/vagrant/land-registry-python-venvs
+bash_profile=/home/vagrant/.bash_profile
+rm -rf ${WORKON_HOME}
+mkdir -p ${WORKON_HOME}
+
+chown -R vagrant:vagrant /home/vagrant
+
+cat <<EOF > ${bash_profile}
+export WORKON_HOME=${WORKON_HOME}
+export PATH=/vagrant/script/bin:${PATH}
+
+source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+alias ls="ls -F"
+cd /vagrant
+
+if [[ ! -d ./apps ]] ; then
+	echo "Bootstrapping environment"
+	lr-bootstrap
+fi
+EOF
+
+echo "0.0.0.0  lr-dev" >> /etc/hosts

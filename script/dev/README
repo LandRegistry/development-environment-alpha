@@ -1,8 +1,0 @@
-This directory contains scripts that will be copied into dependent projects by the bootstrap script.
-
-The scripts in this directory will be copied into the 'dev' directory in dependent projects.
-
-If you want to override this behaviour in dependent projects simply create your own 'dev' directory in the projects
-and your own scripts will be run instead, although you'll have to replicate all of the functionality of the boostrapper.
-
-

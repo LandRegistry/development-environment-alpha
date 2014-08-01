@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Uncomment the line below if you want to run this script with debug turned on
+#set -x
+set -e
+
+case `uname` in
+    Linux)
+        if [[ ! -d /vagrant ]] ; then
+            echo "You need to be running in the vagrant VM to do this"
+            exit 1
+        fi
+    ;;
+
+    *)  
+	    echo
+	    echo
+	    echo "You need to be running in your vagrant virtual machine to run this."
+	    echo
+	    echo "Run vagrant ssh from the root directory of the development environment and then re-run this script"
+	    echo
+	    exit 1
+    ;;
+esac
+
+source /vagrant/script/dev-env-functions
+for app_and_port in ${apps_and_ports}; do
+    app_name=`echo ${app_and_port} | cut -d':' -f1`
+	checkout ${app_name}
+done
+
