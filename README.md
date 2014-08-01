@@ -51,6 +51,12 @@ To start up all of the applications run
 lr-start-all
 ```
 
+## Appplication files & log locations
+
+Each application will be stored in */vagrant/apps/*
+
+Logs for each individual application can be found in */vagrant/logs*
+
 ## To update all of the apps
 
 Simply run 
