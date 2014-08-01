@@ -11,6 +11,14 @@ In order to run the development environment locally you will need
 * Vagrant (http://www.vagrantup.com/downloads.html)
 * git must be installed locally
 
+### Configuring the hostfile
+
+Before using the service ensure that the following line is in your hostfile on the host machine. (Normally in /etc/hosts)
+
+```
+lr-casework lr-service lr-govuk www.gov.uk.dev.landregistryconcept.co.uk land.service.gov.uk.dev.landregistryconcept.co.uk casework.dev.landregistryconcept.co.uk
+```
+
 ## Creating the environment
 
 From the directory containing this repository run
@@ -41,6 +49,14 @@ To start up all of the applications run
 
 ```
 lr-start-all
+```
+
+## To update all of the apps
+
+Simply run 
+
+```
+lr-update-all-apps
 ```
 
 ## If your environment becomes corrupted
