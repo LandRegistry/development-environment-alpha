@@ -171,7 +171,6 @@ function run_unit_tests_for_app {
     echo "============================================================="
     echo            RUNNING TESTS FOR ${app_to_test}
     echo "-------------------------------------------------------------" 
-    
     cd /vagrant/apps/${app_to_test}  
     check_all_apps_are_valid ${app_to_test}
     
@@ -187,7 +186,6 @@ function run_unit_tests_for_app {
     set +o errexit
     workon ${app_to_test}
 
-    SETTINGS=''
     source_app_environment $app_to_test
     source_app_test_environment $app_to_test
 
@@ -239,8 +237,10 @@ function die_cant_find_any_apps {
 
 function configure_virtual_env_for_apps {
   for app_to_start in $@; do
-    echo "Configuring virtual environment for ${app_to_start}"
-    create_virtual_env ${app_to_start}
-    deactivate
+    (
+      echo "Configuring virtual environment for ${app_to_start}"
+      create_virtual_env ${app_to_start}
+      deactivate
+    )
   done
 }

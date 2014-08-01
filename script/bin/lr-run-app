@@ -33,9 +33,11 @@ if [[ -z $@ ]]; then
 	# application directory with a run.sh
 
 	if [ -f ./run.sh ]; then
-	  	app_to_start=$(basename `pwd`)
-		configure_virtual_env_for_apps $app_to_start
-		/vagrant/script/start $app_to_start
+		(
+	  		app_to_start=$(basename `pwd`)
+			configure_virtual_env_for_apps $app_to_start
+			/vagrant/script/start $app_to_start
+		)
 	else
 		die_cant_find_any_apps
 	fi
