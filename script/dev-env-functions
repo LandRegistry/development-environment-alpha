@@ -175,11 +175,11 @@ function run_unit_tests_for_app {
     check_all_apps_are_valid ${app_to_test}
     
     set +o errexit
-    configure_virtual_env_for_apps ${app_to_test} > /vagrant/logs/venv_setup_${app}.log 
+    configure_virtual_env_for_apps ${app_to_test} > /vagrant/logs/venv_setup_${app_to_test}.log 
     
     if [[ -z $? ]]; then
       echo "Error setting up virtual environment"
-      cat /vagrant/logs/venv_setup_${app}.log 
+      cat /vagrant/logs/venv_setup_${app_to_test}.log 
       exit 1
     fi
 
