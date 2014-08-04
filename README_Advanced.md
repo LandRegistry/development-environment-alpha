@@ -76,6 +76,8 @@ As an example, lets say I am working in an app called *my-app*. I could create a
 	
 set -e
 source /vagrant/script/dev-env-functions
+source ./environment.sh
+
 create_virtual_env "my-app"
 
 # Now, any commands in this script will be in the virtual environment.

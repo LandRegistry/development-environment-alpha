@@ -81,3 +81,7 @@ vagrant destroy
 vagrant up
 ```
 
+## Advanced topics
+
+For more detailed operations within the dev environment look here: https://github.com/LandRegistry/development-environment/blob/master/README_Advanced.md
+
