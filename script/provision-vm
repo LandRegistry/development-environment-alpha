@@ -22,7 +22,7 @@ apt-get update -qq
 
 echo "Setting up core linux tools"
 apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev ruby-dev virtualenvwrapper phantomjs
-apt-get install -qy binutils libproj-dev gdal-bin libgeos-3.4.2 libproj0 libgdal1h
+apt-get install -qy binutils libproj-dev gdal-bin libgdal-dev libgeos-3.4.2 libproj0 libgdal1h  python-gdal
 
 echo "Setting up docker"
 apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0
