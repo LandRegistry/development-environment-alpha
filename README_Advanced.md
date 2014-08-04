@@ -10,7 +10,21 @@ This directory is the workspace that developers can use to work on apps. All of 
 
 #### /vagrant/config
 
-The config directory contains two files: the *apps* file describes which apps to check out in the development environment, and the *virtual-env-global-requirements.txt* is a pip requirements file containing global requirements required in all virutual environments to make the development environment work. Application dependencies should not be checked into this file.
+The config directory contains two files: the *apps* file describes which apps to check out in the development environment, and the ports to start them on. If your app does not requrire a port simply set this to 0.
+
+So, to add an app from the git repo *my-app* on port *8000* add this to the file:
+
+```
+my-app:8000
+```
+
+and to add an app called *my-no-port-app* with no port add this
+
+```
+my-no-port-app:0
+```
+
+The *virtual-env-global-requirements.txt* is a pip requirements file containing global requirements required in all virutual environments to make the development environment work. Application dependencies should not be checked into this file.
 
 #### /vagrant/logs
 
@@ -43,7 +57,33 @@ Note that the development environment will import *environment.sh* when starting
 
 Currently the best place for this is in the *environment.sh*. Do not do this in the *run.sh*.
 
+#### If your application needs to run python unit tests
 
+If you want unit tests to be run by *lr-run-unit-tests* then you need to add a *tests* directory to the root of your app. Note: you need to place an *__init__.py* file in each test directory to ensure that it is picked up by py.test. 
+
+#### Writing scripts to run in the virtual environmnet
+
+The development enviromnet wraps the provision of the python virtual environments. In certain cases you might want to execute scripts in the virtual environment, for example to load test data.
+
+In order to do this, create an executable script in your application (*do not call it run.sh*) and source in the development environment functions. You can then create the virtual environment with the *create_virtual_env <app-name>* and run the command required. Don't foget to call *deactivate* afterwards in the script to turn off the virtual env.
+
+A good example can be found in the service frontend here: https://github.com/LandRegistry/service-frontend/blob/master/create-user-for-integration-tests.sh
+
+As an example, lets say I am working in an app called *my-app*. I could create a script called *do-stuff.sh* in my root and do the following:
+
+```
+#!/bin/bash
+	
+set -e
+source /vagrant/script/dev-env-functions
+create_virtual_env "my-app"
+
+# Now, any commands in this script will be in the virtual environment.
+python do-stuff-in-virtual-env.py
+
+# Now we'll leave the virtual env
+deactivate
+```
 
 ### Starting multiple applications
 
