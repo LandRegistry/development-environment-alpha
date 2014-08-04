@@ -19,6 +19,19 @@ Before using the service ensure that the following line is in your hostfile on t
 172.16.42.43    lr-casework lr-service lr-govuk www.gov.uk.dev.landregistryconcept.co.uk land.service.gov.uk.dev.landregistryconcept.co.uk casework.dev.landregistryconcept.co.uk
 ```
 
+### Configuring SSH agent forwarding
+
+To allow github repos to be cloned down while inside the vagrant box, you need to give it access to your local ssh keys. Create your ssh config file if you don't have one already:
+
+```
+touch ~/.ssh/config
+```
+and add the following lines:
+```
+Host 172.16.42.43
+   ForwardAgent yes
+```
+
 ## Creating the environment
 
 From the directory containing this repository run
