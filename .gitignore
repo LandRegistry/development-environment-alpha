@@ -27,3 +27,4 @@ property
 .aptget/partial
 .aptget/*.deb
 .aptget/lock
+.python-version
