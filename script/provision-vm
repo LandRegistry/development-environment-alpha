@@ -27,6 +27,9 @@ apt-get install -qy binutils libproj-dev gdal-bin libgdal-dev libgeos-3.4.2 libp
 echo "Setting up docker"
 apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0
 
+echo "Setting up nginx"
+apt-get install -qy  nginx
+
 echo 'export DOCKER_OPTS="-H unix:///var/run/docker.sock -H tcp://0.0.0.0:4243"' > /etc/default/docker
 echo 'export DOCKER_HOST=tcp://0.0.0.0:4243' > /home/vagrant/.bash_profile
 stop docker
@@ -89,6 +92,8 @@ if [[ ! -d ./apps ]] ; then
 	echo "Bootstrapping environment"
 	lr-bootstrap
 fi
+
+lr-nginx
 EOF
 
 echo "0.0.0.0  lr-dev" >> /etc/hosts
