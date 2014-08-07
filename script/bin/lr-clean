@@ -39,6 +39,9 @@ find . -type d -name ".webasset-cache" | xargs rm -rf
 echo "Removing python virtual envrionments"
 rm -rf /home/vagrant/land-registry-python-venvs
 
+echo "Clearing elastic search indexes"
+curl -XDELETE http://localhost:9200/public_titles
+curl -XDELETE http://localhost:9200/authenticated_titles
 
 
 
