@@ -1,0 +1,60 @@
+#!/bin/bash
+# Brings nginx configuration up to scratch with the apps list.
+
+APPSLIST=${1:-/vagrant/config/apps}
+if [ ! -e $APPSLIST ] ; then
+  echo "$APPSLIST not found. If you are running this outside of the VM, try with:"
+  echo "$0 config/apps"
+  exit 1
+fi
+
+export DOMAIN="landregistry.local"
+
+# Ensure domain
+sudo perl -pi -e 's/server_name localhost/server_name $ENV{"DOMAIN"}/g' /etc/nginx/sites-available/default
+
+# delete the old configurations
+#for oldapp in $(ls -1 /etc/nginx/sites-available/ |egrep -v default); do
+#  echo "NGINX: deleting $oldapp"
+#  sudo rm -rf /etc/nginx/sites-available/$oldapp >/dev/null
+#  sudo rm -rf /etc/nginx/sites-enabled/$oldapp >/dev/null
+#done
+
+ETCHOSTS=""
+
+# Configure each app
+apps_and_ports=$(cat $APPSLIST | grep -v \# | grep -v '^\s*$')
+for app_and_port in ${apps_and_ports}; do
+  app=$(echo ${app_and_port} | cut -d':' -f1)
+  port=$(echo ${app_and_port} | cut -d':' -f2)
+  if [ $port == 0 ]; then
+    continue;
+  fi
+
+  # delete the old configurations
+  echo "NGINX: deleting previous configuration of $app"
+  sudo rm -rf /etc/nginx/sites-available/$app >/dev/null
+  sudo rm -rf /etc/nginx/sites-enabled/$app >/dev/null
+
+  # re-create the configuration
+  sudo tee "/etc/nginx/sites-available/$app" > /dev/null <<EOF
+server {
+  server_name $app.$DOMAIN;
+  location / {
+    proxy_pass http://localhost:$port;
+    proxy_set_header X-Real-IP \$remote_addr;
+    proxy_set_header Host \$http_host;
+  }
+}
+EOF
+  # re-link
+  echo "NGINX: creating $app with port $port"
+  sudo ln -s /etc/nginx/sites-available/$app /etc/nginx/sites-enabled/$app
+  ETCHOSTS="$ETCHOSTS $app.$DOMAIN"
+done
+
+echo "NGINX: restarting"
+sudo service nginx restart
+
+echo "NGINX: add the following line to your /etc/hosts"
+echo "172.16.42.43 $ETCHOSTS"
