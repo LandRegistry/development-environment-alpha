@@ -6,27 +6,27 @@
 
 echo 'trying'
 if [ "$(pwd)" == "/vagrant" ]; then
-  echo 'current is /vagrant'
   APPSLIST=/vagrant/config/apps
   SPLASH_PAGE=/vagrant/config/index.html
 else
-  echo 'running outside vm'
   ls config > /dev/null 2>&1
   if [ $? == 0 ] ; then
     APPSLIST=config/apps
     SPLASH_PAGE=config/index.html
   else
-    echo "Can't find 'config' -- please run this from the development-environment checkou?"
+    echo "Can't find 'config' -- please run this from the development-environment checkout"
     exit 1
   fi
 fi
-echo 'got here'
 echo "APPSLIST = $APPSLIST"
 echo "SPLASH_PAGE = $SPLASH_PAGE"
 export DOMAIN="landregistry.local"
 
 # Ensure domain
-sudo perl -pi -e 's/server_name localhost/server_name $ENV{"DOMAIN"}/g' /etc/nginx/sites-available/default
+TMPDEFAULT=$(mktemp -t nginx-default.XXXXXX)
+cp /etc/nginx/sites-available/default $TMPDEFAULT
+perl -pi -e 's/server_name localhost/server_name $ENV{"DOMAIN"}/g' $TMPDEFAULT
+sudo cp $TMPDEFAULT /etc/nginx/sites-available/default
 
 ETCHOSTS=""
 
