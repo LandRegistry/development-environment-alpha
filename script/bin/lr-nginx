@@ -1,24 +1,32 @@
 #!/bin/bash
 # Brings nginx configuration up to scratch with the apps list.
 
-APPSLIST=${1:-/vagrant/config/apps}
-if [ ! -e $APPSLIST ] ; then
-  echo "$APPSLIST not found. If you are running this outside of the VM, try with:"
-  echo "$0 config/apps"
-  exit 1
-fi
+#set -x
+#set -e
 
+echo 'trying'
+if [ "$(pwd)" == "/vagrant" ]; then
+  echo 'current is /vagrant'
+  APPSLIST=/vagrant/config/apps
+  SPLASH_PAGE=/vagrant/config/index.html
+else
+  echo 'running outside vm'
+  ls config > /dev/null 2>&1
+  if [ $? == 0 ] ; then
+    APPSLIST=config/apps
+    SPLASH_PAGE=config/index.html
+  else
+    echo "Can't find 'config' -- please run this from the development-environment checkou?"
+    exit 1
+  fi
+fi
+echo 'got here'
+echo "APPSLIST = $APPSLIST"
+echo "SPLASH_PAGE = $SPLASH_PAGE"
 export DOMAIN="landregistry.local"
 
 # Ensure domain
 sudo perl -pi -e 's/server_name localhost/server_name $ENV{"DOMAIN"}/g' /etc/nginx/sites-available/default
-
-# delete the old configurations
-#for oldapp in $(ls -1 /etc/nginx/sites-available/ |egrep -v default); do
-#  echo "NGINX: deleting $oldapp"
-#  sudo rm -rf /etc/nginx/sites-available/$oldapp >/dev/null
-#  sudo rm -rf /etc/nginx/sites-enabled/$oldapp >/dev/null
-#done
 
 ETCHOSTS=""
 
@@ -51,7 +59,16 @@ EOF
   echo "NGINX: creating $app with port $port"
   sudo ln -s /etc/nginx/sites-available/$app /etc/nginx/sites-enabled/$app
   ETCHOSTS="$ETCHOSTS $app.$DOMAIN"
+
+  export APP_HTML_LIST="$APP_HTML_LIST <tr><td>$app</td><td>$port</td><td><a href=\"http://$app.$DOMAIN\">$app.$DOMAIN</a></td></tr>"
 done
+
+# hook up helpful splash page
+# (I have to use a temp file, otherwise the result is blank, weirdly)
+TEMP=$(mktemp -t dev-env-splash-page.XXXXXX)
+sudo cp $SPLASH_PAGE $TEMP
+perl -pi -e 's/PLACEHOLDER/$ENV{"APP_HTML_LIST"}/g' $TEMP
+sudo cp $TEMP /usr/share/nginx/html/index.html
 
 echo "NGINX: restarting"
 sudo service nginx restart
