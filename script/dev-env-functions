@@ -120,15 +120,14 @@ function create_virtual_env {
   set +o errexit
   workon ${app_name}
   set -e
-  echo "Installing core requirements in virtual envrionment [${app_name}]"
-  pip install -r ${DEV_ENV_REQUIREMENTS}
+  pip -q install -r ${DEV_ENV_REQUIREMENTS}
 
   if [[ -f /vagrant/apps/${app_name}/requirements.txt ]] ; then
-    pip install -r /vagrant/apps/${app_name}/requirements.txt
+    pip -q install -r /vagrant/apps/${app_name}/requirements.txt
   fi 
 
   if [[ -f /vagrant/apps/${app_name}/requirements_test.txt ]] ; then
-    pip install -r /vagrant/apps/${app_name}/requirements_test.txt
+    pip -q install -r /vagrant/apps/${app_name}/requirements_test.txt
   fi 
 }
 
@@ -177,17 +176,8 @@ function run_unit_tests_for_app {
     check_all_apps_are_valid ${app_to_test}
     
     set +o errexit
-    configure_virtual_env_for_apps ${app_to_test} > /vagrant/logs/venv_setup_${app_to_test}.log 
-    
-    if [[ -z $? ]]; then
-      echo "Error setting up virtual environment"
-      cat /vagrant/logs/venv_setup_${app_to_test}.log 
-      exit 1
-    fi
-
-    set +o errexit
+    configure_virtual_env_for_apps ${app_to_test} 
     workon ${app_to_test}
-
     source_app_environment $app_to_test
     source_app_test_environment $app_to_test
 
@@ -240,7 +230,6 @@ function die_cant_find_any_apps {
 function configure_virtual_env_for_apps {
   for app_to_start in $@; do
     (
-      echo "Configuring virtual environment for ${app_to_start}"
       create_virtual_env ${app_to_start}
       deactivate
     )
