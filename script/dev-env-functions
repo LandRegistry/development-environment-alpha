@@ -174,17 +174,8 @@ function run_unit_tests_for_app {
     check_all_apps_are_valid ${app_to_test}
     
     set +o errexit
-    configure_virtual_env_for_apps ${app_to_test} > /vagrant/logs/venv_setup_${app}.log 
-    
-    if [[ -z $? ]]; then
-      echo "Error setting up virtual environment"
-      cat /vagrant/logs/venv_setup_${app}.log 
-      exit 1
-    fi
-
-    set +o errexit
+    configure_virtual_env_for_apps ${app_to_test}    
     workon ${app_to_test}
-
     source_app_environment $app_to_test
     source_app_test_environment $app_to_test
 
@@ -237,7 +228,6 @@ function die_cant_find_any_apps {
 function configure_virtual_env_for_apps {
   for app_to_start in $@; do
     (
-      echo "Configuring virtual environment for ${app_to_start}"
       create_virtual_env ${app_to_start}
       deactivate
     )
