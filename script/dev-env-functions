@@ -118,15 +118,14 @@ function create_virtual_env {
   set +o errexit
   workon ${app_name}
   set -e
-  echo "Installing core requirements in virtual envrionment [${app_name}]"
-  pip install -r ${DEV_ENV_REQUIREMENTS}
+  pip -q install -r ${DEV_ENV_REQUIREMENTS}
 
   if [[ -f /vagrant/apps/${app_name}/requirements.txt ]] ; then
-    pip install -r /vagrant/apps/${app_name}/requirements.txt
+    pip -q install -r /vagrant/apps/${app_name}/requirements.txt
   fi 
 
   if [[ -f /vagrant/apps/${app_name}/requirements_test.txt ]] ; then
-    pip install -r /vagrant/apps/${app_name}/requirements_test.txt
+    pip -q install -r /vagrant/apps/${app_name}/requirements_test.txt
   fi 
 }
 
