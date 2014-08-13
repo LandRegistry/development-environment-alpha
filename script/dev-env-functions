@@ -8,7 +8,7 @@ apps_and_ports=`cat /vagrant/config/apps | grep -v \# | grep -v '^\s*$'`
 DEV_ENV_REQUIREMENTS=/vagrant/config/virtual-env-global-requirements.txt
 
 function get_port_for_app {
-  local app=$1 
+  local app=$1
 
   if [[ $(is_valid_app $app) = 1 ]] ; then
     for app_and_port in ${apps_and_ports}; do
@@ -47,7 +47,7 @@ function is_valid_app {
 
 function update_development_environment {
   echo "Updating development environment"
-  git -C /vagrant pull 
+  git -C /vagrant pull
   lr-bootstrap
 }
 
@@ -66,7 +66,7 @@ function checkout {
   local app=$1
   local app_dir=/vagrant/apps/${app}
 
-  if [[ ! -d ${app_dir} ]] ; then 
+  if [[ ! -d ${app_dir} ]] ; then
     mkdir -p /vagrant/apps/
     git -C /vagrant/apps/ clone git@github.com:landregistry/${app}.git
     update_submodules_for_app ${app}
@@ -93,6 +93,12 @@ function source_app_test_environment {
   fi
 }
 
+function source_secrets {
+  local secrets_file='/vagrant/apps/secrets/secrets_development.sh'
+
+    source ${secrets_file}
+}
+
 function update_app {
   local app=$1
   local app_dir=/vagrant/apps/${app}
@@ -111,11 +117,11 @@ function create_virtual_env {
     echo "Creating python virtual env for ${app_name} in ${WORKON_HOME}"
     set +o errexit
     # TODO: We're having to add the site-packages here for GDAL. This may cause problems later
-    # and we need to figure out how to get GDAL to compile locally 
+    # and we need to figure out how to get GDAL to compile locally
     mkvirtualenv --system-site-packages -a "/vagrant/apps/${app_name}" -r ${DEV_ENV_REQUIREMENTS} ${app_name}
     set -e
   fi
-  
+
   echo "Activating virtual envrionment [${app_name}]"
   set +o errexit
   workon ${app_name}
@@ -124,11 +130,11 @@ function create_virtual_env {
 
   if [[ -f /vagrant/apps/${app_name}/requirements.txt ]] ; then
     pip -q install -r /vagrant/apps/${app_name}/requirements.txt
-  fi 
+  fi
 
   if [[ -f /vagrant/apps/${app_name}/requirements_test.txt ]] ; then
     pip -q install -r /vagrant/apps/${app_name}/requirements_test.txt
-  fi 
+  fi
 }
 
 function dump_apps_and_ports {
@@ -171,15 +177,16 @@ function run_unit_tests_for_app {
   else
     echo "============================================================="
     echo            RUNNING TESTS FOR ${app_to_test}
-    echo "-------------------------------------------------------------" 
-    cd /vagrant/apps/${app_to_test}  
+    echo "-------------------------------------------------------------"
+    cd /vagrant/apps/${app_to_test}
     check_all_apps_are_valid ${app_to_test}
-    
+
     set +o errexit
-    configure_virtual_env_for_apps ${app_to_test} 
+    configure_virtual_env_for_apps ${app_to_test}
     workon ${app_to_test}
     source_app_environment $app_to_test
     source_app_test_environment $app_to_test
+    source_secrets
 
     if [[ -z ${SETTINGS} ]] ; then
       export SETTINGS="config.TestConfig"
@@ -200,9 +207,9 @@ function die_if_procfile_is_present {
     echo
     for proc_definition in `cat /vagrant/Procfile | cut -d':' -f1`; do
       echo ${proc_definition}
-    done 
+    done
     echo
-    echo "This either means that you already have some applications running" 
+    echo "This either means that you already have some applications running"
     echo "   OR"
     echo "the applications have died leaving a Procfile behind"
     echo
@@ -218,12 +225,12 @@ function remove_procfile_on_exit {
 }
 
 function die_cant_find_any_apps {
-  echo 
-  echo "You've called this script without specifiy which apps you need and I can't find a run.sh" 
-  echo "in the current directory [`pwd`]" 
-  echo 
-  echo "You either need to specify some apps, or lr-run-app from the base directory of an app with a run.sh" 
-  echo 
+  echo
+  echo "You've called this script without specifiy which apps you need and I can't find a run.sh"
+  echo "in the current directory [`pwd`]"
+  echo
+  echo "You either need to specify some apps, or lr-run-app from the base directory of an app with a run.sh"
+  echo
   exit 1
 }
 
