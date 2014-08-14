@@ -118,7 +118,7 @@ function create_virtual_env {
     set +o errexit
     # TODO: We're having to add the site-packages here for GDAL. This may cause problems later
     # and we need to figure out how to get GDAL to compile locally
-    mkvirtualenv --system-site-packages -a "/vagrant/apps/${app_name}" -r ${DEV_ENV_REQUIREMENTS} ${app_name}
+    mkvirtualenv -a "/vagrant/apps/${app_name}" -r ${DEV_ENV_REQUIREMENTS} ${app_name}
     set -e
   fi
 
