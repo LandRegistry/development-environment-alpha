@@ -16,7 +16,7 @@ In order to run the development environment locally you will need
 Before using the service ensure that the following line is in your hostfile on the host machine. (Normally in /etc/hosts)
 
 ```
-172.16.42.43  system-of-record.landregistry.local mint.landregistry.local property-frontend.landregistry.local search-api.landregistry.local casework-frontend.landregistry.local public-titles-api.landregistry.local the-feeder.landregistry.local service-frontend.landregistry.local geo.landregistry.local html-prototypes.landregistry.local
+172.16.42.43  system-of-record.landregistry.local mint.landregistry.local property-frontend.landregistry.local search-api.landregistry.local casework-frontend.landregistry.local public-titles-api.landregistry.local the-feeder.landregistry.local service-frontend.landregistry.local geo.landregistry.local html-prototypes.landregistry.local style-guide.landregistry.local
 ```
 
 This is the most recent list of hosts at the time of writing this. Running ```lr-nginx``` will give you the most recent list.
