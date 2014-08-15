@@ -15,6 +15,7 @@ public-titles-api:8005
 the-feeder:8006
 service-frontend:8007
 geo:8008
+decision:8009
 acceptance-tests:0
 datatypes:0
 audit-plugin:0
