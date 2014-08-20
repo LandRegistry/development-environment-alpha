@@ -73,5 +73,8 @@ sudo cp $TEMP /usr/share/nginx/html/index.html
 echo "NGINX: restarting"
 sudo service nginx restart
 
-echo "NGINX: add the following line to your /etc/hosts"
-echo "172.16.42.43 $ETCHOSTS"
+echo
+echo -e "\e[31mNGINX: add the following line to your /etc/hosts:\e[0m"
+echo 
+echo -e "\e[96m172.16.42.43 $ETCHOSTS \e[0m"
+echo
