@@ -28,7 +28,7 @@ cp /etc/nginx/sites-available/default $TMPDEFAULT
 perl -pi -e 's/server_name localhost/server_name $ENV{"DOMAIN"}/g' $TMPDEFAULT
 sudo cp $TMPDEFAULT /etc/nginx/sites-available/default
 
-ETCHOSTS=""
+ETCHOSTS="$DOMAIN "
 
 # Configure each app
 apps_and_ports=$(cat $APPSLIST | grep -v \# | grep -v '^\s*$')
