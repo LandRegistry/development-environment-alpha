@@ -28,7 +28,7 @@ cp /etc/nginx/sites-available/default $TMPDEFAULT
 perl -pi -e 's/server_name localhost/server_name $ENV{"DOMAIN"}/g' $TMPDEFAULT
 sudo cp $TMPDEFAULT /etc/nginx/sites-available/default
 
-ETCHOSTS=""
+ETCHOSTS="$DOMAIN "
 
 # Configure each app
 apps_and_ports=$(cat $APPSLIST | grep -v \# | grep -v '^\s*$')
@@ -73,5 +73,8 @@ sudo cp $TEMP /usr/share/nginx/html/index.html
 echo "NGINX: restarting"
 sudo service nginx restart
 
-echo "NGINX: add the following line to your /etc/hosts"
-echo "172.16.42.43 $ETCHOSTS"
+echo
+echo -e "\e[31mNGINX: add the following line to your /etc/hosts:\e[0m"
+echo 
+echo -e "\e[96m172.16.42.43 $ETCHOSTS \e[0m"
+echo
