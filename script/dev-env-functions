@@ -161,7 +161,7 @@ function check_all_apps_are_valid {
 }
 
 function find_python_packages {
-  echo `find  .  -type f -name __init__.py -print0 | xargs -0 -n1 dirname | grep -v tests | xargs basename`
+  echo `find  .  -type f -name __init__.py -print0 | xargs -0 -n1 dirname | grep -v tests | xargs dirname`
 }
 
 function run_unit_tests_for_app {
