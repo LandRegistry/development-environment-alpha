@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source /vagrant/script/dev-env-functions
+lr-bootstrap
+configure_virtual_env_for_apps $(basename `pwd`)
+flake8 $@ .
+deactivate
