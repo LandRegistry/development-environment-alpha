@@ -13,7 +13,7 @@ case `uname` in
     ;;
 
     *)
-        
+
         echo
         echo
         echo "You need to be running in your vagrant virtual machine to run this."
@@ -34,14 +34,16 @@ echo "Removing compiled python files"
 find . -type f -name "*pyc" | xargs rm -f
 
 echo "Removing web asset cache"
-find . -type d -name ".webasset-cache" | xargs rm -rf 
+find . -type d -name ".webasset-cache" | xargs rm -rf
 
 echo "Removing python virtual envrionments"
 rm -rf /home/vagrant/land-registry-python-venvs
+
+echo "Removing unit test coverage reports"
+find . -type d -name "htmlcov" | xargs rm -rf
 
 echo "Clearing elastic search indexes"
 curl -XDELETE http://localhost:9200/public_titles
 curl -XDELETE http://localhost:9200/authenticated_titles
 
-
-
+echo

@@ -192,9 +192,15 @@ function run_unit_tests_for_app {
       export SETTINGS="config.TestConfig"
     fi
 
-    PORT=$(get_port_for_app $1) py.test --cov $(find_python_packages) tests/
+    PORT=$(get_port_for_app $1) py.test --cov-report html --cov $(find_python_packages) tests/
     deactivate
     set -e
+    echo "Coverage reports have been generated in the directory 'htmlcov'"
+    echo "On your host mac you can view these by running"
+    echo
+    echo "  open htmlcov/index.html"
+    echo
+    echo "from this directory"
   fi
 
   cd ${current_dir}
