@@ -1,80 +1,14 @@
 #!/bin/bash
 # Brings nginx configuration up to scratch with the apps list.
 
-#set -x
-#set -e
-
-echo 'trying'
-if [ "$(pwd)" == "/vagrant" ]; then
-  APPSLIST=/vagrant/config/apps
-  SPLASH_PAGE=/vagrant/config/index.html
-else
-  ls config > /dev/null 2>&1
-  if [ $? == 0 ] ; then
-    APPSLIST=config/apps
-    SPLASH_PAGE=config/index.html
-  else
-    echo "Can't find 'config' -- please run this from the development-environment checkout"
-    exit 1
-  fi
-fi
-echo "APPSLIST = $APPSLIST"
-echo "SPLASH_PAGE = $SPLASH_PAGE"
-export DOMAIN="landregistry.local"
-
-# Ensure domain
-TMPDEFAULT=$(mktemp -t nginx-default.XXXXXX)
-cp /etc/nginx/sites-available/default $TMPDEFAULT
-perl -pi -e 's/server_name localhost/server_name $ENV{"DOMAIN"}/g' $TMPDEFAULT
-sudo cp $TMPDEFAULT /etc/nginx/sites-available/default
-
-ETCHOSTS="$DOMAIN "
-
-# Configure each app
-apps_and_ports=$(cat $APPSLIST | grep -v \# | grep -v '^\s*$')
-for app_and_port in ${apps_and_ports}; do
-  app=$(echo ${app_and_port} | cut -d':' -f1)
-  port=$(echo ${app_and_port} | cut -d':' -f2)
-  if [ $port == 0 ]; then
-    continue;
-  fi
-
-  # delete the old configurations
-  echo "NGINX: deleting previous configuration of $app"
-  sudo rm -rf /etc/nginx/sites-available/$app >/dev/null
-  sudo rm -rf /etc/nginx/sites-enabled/$app >/dev/null
-
-  # re-create the configuration
-  sudo tee "/etc/nginx/sites-available/$app" > /dev/null <<EOF
-server {
-  server_name $app.$DOMAIN;
-  location / {
-    proxy_pass http://localhost:$port;
-    proxy_set_header X-Real-IP \$remote_addr;
-    proxy_set_header Host \$http_host;
-  }
-}
-EOF
-  # re-link
-  echo "NGINX: creating $app with port $port"
-  sudo ln -s /etc/nginx/sites-available/$app /etc/nginx/sites-enabled/$app
-  ETCHOSTS="$ETCHOSTS $app.$DOMAIN"
-
-  export APP_HTML_LIST="$APP_HTML_LIST <tr><td>$app</td><td>$port</td><td><a href=\"http://$app.$DOMAIN\">$app.$DOMAIN</a></td></tr>"
-done
-
-# hook up helpful splash page
-# (I have to use a temp file, otherwise the result is blank, weirdly)
-TEMP=$(mktemp -t dev-env-splash-page.XXXXXX)
-sudo cp $SPLASH_PAGE $TEMP
-perl -pi -e 's/PLACEHOLDER/$ENV{"APP_HTML_LIST"}/g' $TEMP
-sudo cp $TEMP /usr/share/nginx/html/index.html
-
-echo "NGINX: restarting"
-sudo service nginx restart
+set -e
+source /vagrant/script/dev-env-functions
+configure_nginx_and_host_file 
 
 echo
-echo -e "\e[31mNGINX: add the following line to your /etc/hosts:\e[0m"
-echo 
+echo "Add the following to the /etc/hosts file on your host machine"
 echo -e "\e[96m172.16.42.43 $ETCHOSTS \e[0m"
 echo
+
+echo $ETCHOSTS > /tmp/etchosts
+

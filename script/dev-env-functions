@@ -248,3 +248,57 @@ function configure_virtual_env_for_apps {
     )
   done
 }
+
+function configure_nginx_and_host_file {
+
+  APPSLIST=/vagrant/config/apps
+  SPLASH_PAGE=/vagrant/config/index.html
+
+  export DOMAIN="landregistry.local"
+
+  # Ensure domain
+  TMPDEFAULT=$(mktemp -t nginx-default.XXXXXX)
+  cp /etc/nginx/sites-available/default $TMPDEFAULT
+  perl -pi -e 's/server_name localhost/server_name $ENV{"DOMAIN"}/g' $TMPDEFAULT
+  sudo cp $TMPDEFAULT /etc/nginx/sites-available/default
+
+  ETCHOSTS="$DOMAIN "
+
+  # Configure each app
+  apps_and_ports=$(cat $APPSLIST | grep -v \# | grep -v '^\s*$')
+  for app_and_port in ${apps_and_ports}; do
+    app=$(echo ${app_and_port} | cut -d':' -f1)
+    port=$(echo ${app_and_port} | cut -d':' -f2)
+    if [ $port == 0 ]; then
+      continue;
+    fi
+
+    # delete the old configurations
+    sudo rm -rf /etc/nginx/sites-available/$app >/dev/null
+    sudo rm -rf /etc/nginx/sites-enabled/$app >/dev/null
+
+    # re-create the configuration
+    sudo tee "/etc/nginx/sites-available/$app" > /dev/null <<EOF
+  server {
+    server_name $app.$DOMAIN;
+    location / {
+      proxy_pass http://localhost:$port;
+      proxy_set_header X-Real-IP \$remote_addr;
+      proxy_set_header Host \$http_host;
+    }
+  }
+EOF
+    # re-link
+    sudo ln -s /etc/nginx/sites-available/$app /etc/nginx/sites-enabled/$app
+    export ETCHOSTS="$ETCHOSTS $app.$DOMAIN"
+    export APP_HTML_LIST="$APP_HTML_LIST <tr><td>$app</td><td>$port</td><td><a href=\"http://$app.$DOMAIN\">$app.$DOMAIN</a></td></tr>"
+  done
+
+  # hook up helpful splash page
+  # (I have to use a temp file, otherwise the result is blank, weirdly)
+  TEMP=$(mktemp -t dev-env-splash-page.XXXXXX)
+  sudo cp $SPLASH_PAGE $TEMP
+  perl -pi -e 's/PLACEHOLDER/$ENV{"APP_HTML_LIST"}/g' $TEMP
+  sudo cp $TEMP /usr/share/nginx/html/index.html
+  sudo service nginx restart > /dev/null 2>&1
+}
