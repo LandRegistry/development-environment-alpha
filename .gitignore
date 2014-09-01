@@ -3,6 +3,7 @@ Procfile
 .vagrant
 .idea/
 logs/
+script/bin/.coverage
 concept-homepage
 concept-frontend
 concept-performance-dashboard
