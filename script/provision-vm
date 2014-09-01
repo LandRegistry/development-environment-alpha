@@ -97,6 +97,7 @@ lr-nginx
 EOF
 
 echo "Bootstrapping environment"
+echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 /vagrant/script/bin/lr-bootstrap
 
 echo "Configuring nginx"
@@ -116,4 +117,3 @@ ff02::3 ip6-allhosts
 172.16.42.43 ${ETCHOSTS}
 
 EOF
-
