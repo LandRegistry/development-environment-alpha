@@ -7,8 +7,8 @@ configure_nginx_and_host_file
 
 echo
 echo "Add the following to the /etc/hosts file on your host machine"
-echo -e "\e[96m172.16.42.43 $ETCHOSTS \e[0m"
+echo -e "\e[96m172.16.42.43 ${ETCHOSTS} \e[0m"
 echo
 
-echo $ETCHOSTS > /tmp/etchosts
+echo $ETCHOSTS > /tmp/etchosts 2>/dev/null
 
