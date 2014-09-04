@@ -5,7 +5,7 @@ This repository contains the setup scripts for developers to quickly get up and 
 
 ## Prerequisites
 
-In order to run the development environment locally you will need 
+In order to run the development environment locally you will need
 
 * VirtualBox 4.3.14 or above (https://www.virtualbox.org/wiki/Downloads)
 * Vagrant (http://www.vagrantup.com/downloads.html)
@@ -52,7 +52,7 @@ This will log into the machine and check out all of the applications in the */va
 
 ## Running all of the unit tests
 
-To run all of the unit tests configured in the applications simply log into the VM and run 
+To run all of the unit tests configured in the applications simply log into the VM and run
 
 ```
 lr-run-all-unit-tests
@@ -74,11 +74,29 @@ Logs for each individual application can be found in */vagrant/logs*
 
 ## To update all of the apps
 
-Simply run 
+Simply run
 
 ```
 lr-update-all-apps
 ```
+
+## To upgrade all of the databases
+
+Simply run
+
+```
+lr-upgrade-all-databases
+```
+
+## To create all of the databases
+
+Run
+
+```
+lr-create-all-databases
+```
+
+Note: This will run automatically when the VM is provisioned.
 
 ## If your environment becomes corrupted
 
@@ -99,4 +117,3 @@ vagrant up
 ## Advanced topics
 
 For more detailed operations within the dev environment look here: https://github.com/LandRegistry/development-environment/blob/master/README_Advanced.md
-
