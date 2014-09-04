@@ -101,7 +101,9 @@ echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 /vagrant/script/bin/lr-bootstrap
 
 echo "Creating databases"
-/vagrant/script/bin/lr-create-all-databases 
+set +o errexit
+su vagrant -c /vagrant/script/bin/lr-create-all-databases 
+set -e
 
 echo "Configuring nginx"
 rm -f /tmp/etchosts
@@ -123,3 +125,5 @@ ff02::3 ip6-allhosts
 EOF
 
 rm -f /tmp/etchosts
+
+

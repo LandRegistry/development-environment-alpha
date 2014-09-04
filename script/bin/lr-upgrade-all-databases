@@ -3,20 +3,16 @@
 set -e
 source /vagrant/script/dev-env-functions
 
-echo "Upgrading all databases. Logs can be found in /vagrant/logs/upgrade-database-<app-name>.log"
-
 for app in $(all_apps); do
 	if [ -f "/vagrant/apps/${app}/db/upgrade_database.sh" ]; then		
 		(
-			echo "Upgrading database for ${app}"
-			LOG="/vagrant/logs/upgrade-database-${app}.log"
-			
+			echo "Upgrading database for ${app}"		
 			set +o errexit
-			create_virtual_env ${app} > ${LOG} 2>&1
+			create_virtual_env ${app} 
 			workon ${app}
 			source_app_environment ${app}
 			source_secrets
-			APP_ROOT=`pwd` ./db/upgrade_database.sh > ${LOG} 2>&1
+			APP_ROOT=`pwd` ./db/upgrade_database.sh 
 			deactivate
 			set -e
 		)

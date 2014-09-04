@@ -2,14 +2,12 @@
 
 source /vagrant/script/dev-env-functions
 
-echo "Creating all databases. Logs can be found in /vagrant/logs/create_database-<app-name>.log"
-
 for app in $(all_apps); do
 	if [ -f "/vagrant/apps/${app}/db/create_database.sh" ]; then		
 		(
-			echo "Creating database for ${app}"
 			APP_DIR=/vagrant/apps/${app}
-			cd ${APP_DIR} && APP_ROOT=${APP_DIR} ./db/create_database.sh > "/vagrant/logs/create_database-${app}.log" 2>&1
+			cd ${APP_DIR} && APP_ROOT=${APP_DIR} ./db/create_database.sh 
+			echo
 		)
 	fi
 done
