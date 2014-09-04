@@ -178,8 +178,9 @@ function run_unit_tests_for_app {
     echo "============================================================="
     echo            RUNNING TESTS FOR ${app_to_test}
     echo "-------------------------------------------------------------"
-    cd /vagrant/apps/${app_to_test}
+    APP_DIR=/vagrant/apps/${app_to_test}
     check_all_apps_are_valid ${app_to_test}
+    cd ${APP_ROOT}
 
     set +o errexit
     configure_virtual_env_for_apps ${app_to_test}
@@ -188,11 +189,15 @@ function run_unit_tests_for_app {
     source_app_test_environment $app_to_test
     source_secrets
 
+    if [[ -x ./db/upgrade-database.sh ]]; then
+      APP_ROOT=${APP_DIR} ./db/upgrade-database.sh
+    fi
+
     if [[ -z ${SETTINGS} ]] ; then
       export SETTINGS="config.TestConfig"
     fi
 
-    PORT=$(get_port_for_app $1) py.test --cov-report html --cov-report term --cov $(find_python_packages) tests/
+    APP_ROOT=${APP_ROOT} PORT=$(get_port_for_app $1) py.test --cov-report html --cov-report term --cov $(find_python_packages) tests/
     deactivate
     set -e
     echo "Coverage reports have been generated in the directory 'htmlcov'"
@@ -232,10 +237,10 @@ function remove_procfile_on_exit {
 
 function die_cant_find_any_apps {
   echo
-  echo "You've called this script without specifiy which apps you need and I can't find a run.sh"
+  echo "You've called this script without specifiy which apps you need and I can't find a run_dev.sh"
   echo "in the current directory [`pwd`]"
   echo
-  echo "You either need to specify some apps, or lr-run-app from the base directory of an app with a run.sh"
+  echo "You either need to specify some apps, or lr-run-app from the base directory of an app with a run_dev.sh"
   echo
   exit 1
 }

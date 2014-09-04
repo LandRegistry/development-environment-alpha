@@ -30,12 +30,11 @@ check_all_apps_are_valid $@
 
 if [[ -z $@ ]]; then
 	# We've not been called with any arguments. Let's see if we're in an
-	# application directory with a run.sh
+	# application directory with a run_dev.sh
 
-	if [ -f ./run.sh ]; then
+	if [ -f ./run_dev.sh ]; then
 		(
 	  		app_to_start=$(basename `pwd`)
-			configure_virtual_env_for_apps $app_to_start
 			/vagrant/script/start $app_to_start
 		)
 	else
@@ -48,7 +47,7 @@ else
 	rm -rf /vagrant/logs/*
 
 	for app in $@; do
-		run=/vagrant/apps/${app}/run.sh
+		run=/vagrant/apps/${app}/run_dev.sh
 
 		if [[ -z $? ]]; then
 			echo "An error occured while creating virtual environment for ${app}"
@@ -58,7 +57,7 @@ else
 		 	then
 		 		echo "${app}: /vagrant/script/start ${app}" >> /vagrant/Procfile
 		 	else
-		 		echo "There is not a run.sh present in ${app} so I'm not going to start it for you"
+		 		echo "There is not a run_dev.sh present in ${app} so I'm not going to start it for you"
 			fi
 		fi
 	done
