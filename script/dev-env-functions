@@ -189,8 +189,8 @@ function run_unit_tests_for_app {
     source_app_test_environment $app_to_test
     source_secrets
 
-    if [[ -x ./db/upgrade-database.sh ]]; then
-      APP_ROOT=${APP_DIR} ./db/upgrade-database.sh
+    if [[ -f ./db/upgrade_database.sh ]]; then
+      APP_ROOT=${APP_DIR} ./db/upgrade_database.sh
     fi
 
     if [[ -z ${SETTINGS} ]] ; then
