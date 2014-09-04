@@ -14,6 +14,6 @@ configure_virtual_env_for_apps $1 > >(tee -a /vagrant/logs/venv_setup_${1}.log) 
 workon $1
 source_app_environment $1
 source_secrets
-SETTINGS='config.DevelopmentConfig' PORT=$(get_port_for_app $1) . run.sh > >(tee -a /vagrant/logs/${1}.log) 2>&1
+APP_ROOT=`pwd` SETTINGS='config.DevelopmentConfig' PORT=$(get_port_for_app $1) . run_dev.sh > >(tee -a /vagrant/logs/${1}.log) 2>&1
 deactivate
 set -e
