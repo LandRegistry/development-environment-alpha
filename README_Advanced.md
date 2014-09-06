@@ -5,7 +5,7 @@
 The development environment will install itself in the */vagrant* directory of your virtual machine.
 In this directory there are a few key sub-directories:
 
-#### /vagrant/apps 
+#### /vagrant/apps
 This directory is the workspace that developers can use to work on apps. All of the applications are checked out here in their own directory.
 
 #### /vagrant/config
@@ -40,32 +40,46 @@ In order to work on a new application in the development environment you can fol
 
 First, create a git repository for the application and push it to github. In your application you will need to create the following files:
 
-#### If you want your application to be startable by scripts like *lr-run-app* 
+#### If you want your application to be startable by scripts like *lr-run-app*
 
-You should add a *run.sh* in the root of the application. This does not need to be executable and must issue the startup command for the application. It should not set any environment variables, the mechanism for this is described below.
+You should add a *run_dev.sh* in the root of the application. This does not need to be executable and must issue the startup command for the application. It should not set any environment variables, the mechanism for this is described below.
 
 #### If your application needs environment specific configuration
 
 Adding an *environment.sh* into the root of the application directory which declares the environment as shell variables is all you need to do.
 *NOTE*: You do *NOT* need to set SETTINGS='config.DevelopmentConfig' here, many of the scripts currently do and this reduces our flexibility.
 
-If you add an *environment_test.sh* into the root of the application directory you can add specific requirements for tests here. 
+If you add an *environment_test.sh* into the root of the application directory you can add specific requirements for tests here.
 
 Note that the development environment will import *environment.sh* when starting the application, and will import *environment.sh* and then *environment_test.sh* when running test, so you don't need to duplicate properties in *environment_test.sh* if they don't need to change when testing. Also note, you do *not* need to add SETTINGS='config.TestConfig' here, the development system will do this for you.
 
 #### If your application needs to create a database
 
-Currently the best place for this is in the *environment.sh*. Do not do this in the *run.sh*.
+Create a folder in your app called *db*
+
+Inside this folder create two scripts, one called *create-database.sh* and the other called *upgrade-database.sh*
+Note: These scripts *need to be executable*
+
+In the create-database.sh script run your database creation code, and in the update-database.sh script call your
+migration code. (If it is a python app you may need to do this in a virtual environment, see the section below)
+
+The database creation is run every time you run a *vagrant provision*, so if you add a new database then developers
+will need to run *vagrant provision*
+
+Database migrations can be run each time you start the app if you add a call to *upgrade-database.sh* in your *run-dev.sh*
+
+You can also call the command *lr-upgrade-all-databases* to run all of the migrations.
+
 
 #### If your application needs to run python unit tests
 
-If you want unit tests to be run by *lr-run-unit-tests* then you need to add a *tests* directory to the root of your app. Note: you need to place an *__init__.py* file in each test directory to ensure that it is picked up by py.test. 
+If you want unit tests to be run by *lr-run-unit-tests* then you need to add a *tests* directory to the root of your app. Note: you need to place an *__init__.py* file in each test directory to ensure that it is picked up by py.test.
 
 #### Writing scripts to run in the virtual environmnet
 
 The development enviromnet wraps the provision of the python virtual environments. In certain cases you might want to execute scripts in the virtual environment, for example to load test data.
 
-In order to do this, create an executable script in your application (*do not call it run.sh*) and source in the development environment functions. You can then create the virtual environment with the *create_virtual_env <app-name>* and run the command required. Don't foget to call *deactivate* afterwards in the script to turn off the virtual env.
+In order to do this, create an executable script in your application (*do not call it run_dev.sh*) and source in the development environment functions. You can then create the virtual environment with the *create_virtual_env <app-name>* and run the command required. Don't foget to call *deactivate* afterwards in the script to turn off the virtual env.
 
 A good example can be found in the service frontend here: https://github.com/LandRegistry/service-frontend/blob/master/create-user-for-integration-tests.sh
 
@@ -73,7 +87,7 @@ As an example, lets say I am working in an app called *my-app*. I could create a
 
 ```
 #!/bin/bash
-	
+
 set -e
 source /vagrant/script/dev-env-functions
 source ./environment.sh
@@ -93,16 +107,16 @@ The environment scripts support two ways of starting applications, either a *mul
 
 It is possible to run multiple single starts at the same time, but only one multi start.
 
-The workflow that is envisioned is that a number of background applications will be started as a multi-start, with the application that developers are working on started individually in another window. This allows developers to quickly stop / start the application they are working on without restarting all of the applications. 
+The workflow that is envisioned is that a number of background applications will be started as a multi-start, with the application that developers are working on started individually in another window. This allows developers to quickly stop / start the application they are working on without restarting all of the applications.
 
 
-All of the applicatications can be started with 
+All of the applicatications can be started with
 
 ```
 lr-start-all
 ```
 
-A selection of applications can be started with 
+A selection of applications can be started with
 
 ```
 lr-run-app [app-names]
@@ -135,4 +149,3 @@ lr-run-unit-tests
 ### Running acceptance tests
 
 The acceptance tests are stored in /vagrant/apps/acceptance-tests, and they feature documentation at https://github.com/LandRegistry/acceptance-tests. Follow these instructions to run the acceptance tests locally.
-

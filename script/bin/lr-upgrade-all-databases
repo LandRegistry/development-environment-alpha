@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+source /vagrant/script/dev-env-functions
+
+for app in $(all_apps); do
+	if [ -f "/vagrant/apps/${app}/db/upgrade_database.sh" ]; then		
+		(
+			echo -e "\e[96mUpgrading database for ${app} \e[0m"	
+			set +o errexit
+			configure_virtual_env_for_apps ${app} 
+			workon ${app}
+			source_app_environment ${app}
+			source_secrets
+			SETTINGS='config.DevelopmentConfig' APP_ROOT=`pwd` ./db/upgrade_database.sh 
+			deactivate
+			set -e
+		)
+	fi
+done
+
