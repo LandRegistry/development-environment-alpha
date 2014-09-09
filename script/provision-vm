@@ -2,6 +2,7 @@
 set -e
 
 echo "Running devkit puppet module"
+rm -rf /tmp/devkit
 git clone https://github.com/LandRegistry/infrastructure-puppet-devkit /tmp/devkit
 puppet apply /tmp/devkit/tests/optional.pp --modulepath=/tmp
 
@@ -44,7 +45,14 @@ bash_profile=/home/vagrant/.bash_profile
 rm -rf ${WORKON_HOME}
 mkdir -p ${WORKON_HOME}
 
+echo "Bootstrapping environment"
+su vagrant -c cat <<EOF > /home/vagrant/.ssh/config
+Host github.com
+	StrictHostKeyChecking no 
+
+EOF
 chown -R vagrant:vagrant /home/vagrant
+su vagrant -c /vagrant/script/bin/lr-bootstrap
 
 cat <<EOF > ${bash_profile}
 export WORKON_HOME=${WORKON_HOME}
@@ -61,10 +69,6 @@ fi
 
 lr-nginx
 EOF
-
-echo "Bootstrapping environment"
-su vagrant -c echo "Host github.com\n\tStrictHostKeyChecking no" > /home/vagrant/.ssh/config
-su vagrant -c /vagrant/script/bin/lr-bootstrap
 
 echo "Creating databases"
 set +o errexit
