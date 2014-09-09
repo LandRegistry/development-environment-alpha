@@ -1,17 +1,9 @@
 #!/bin/bash
 set -e
 
-echo "Adding repositories"
-
-# Java
-add-apt-repository ppa:webupd8team/java
-
-# Docker
-echo "deb https://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
-
-# Redis
-sudo apt-add-repository ppa:chris-lea/redis-server
+echo "Running devkit puppet module"
+git clone https://github.com/LandRegistry/infrastructure-puppet-devkit /tmp/devkit
+puppet apply /tmp/devkit/tests/optional.pp --modulepath=/tmp
 
 # elasticsearch
 wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key add -
@@ -21,37 +13,11 @@ echo "Updating repositories"
 apt-get update -qq
 
 echo "Setting up core linux tools"
-apt-get install -qy git libcurl4-openssl-dev build-essential python2.7 python2.7-dev ruby-dev virtualenvwrapper phantomjs
+apt-get install -qy libcurl4-openssl-dev phantomjs
 apt-get install -qy binutils libproj-dev gdal-bin libgdal-dev libgeos-3.4.2 libproj0 libgdal1h  python-gdal
 
-echo "Setting up docker"
-apt-get install -o Dpkg::Options::="--force-confnew" -qy lxc-docker-1.0.0
-
-echo "Setting up nginx"
-apt-get install -qy  nginx
-
-echo 'export DOCKER_OPTS="-H unix:///var/run/docker.sock -H tcp://0.0.0.0:4243"' > /etc/default/docker
-echo 'export DOCKER_HOST=tcp://0.0.0.0:4243' > /home/vagrant/.bash_profile
-stop docker
-start docker
-
-echo "Installing fig"
-FIG_VERSION='0.5.1'
-curl -L -s https://github.com/orchardup/fig/releases/download/$FIG_VERSION/linux > /usr/local/bin/fig
-chmod +x /usr/local/bin/fig
-
-echo "Installing Oracle java 7"
-echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-apt-get install -qy oracle-java7-installer
-update-java-alternatives -s java-7-oracle
-
-echo "Installing gems"
-gem install foreman --no-rdoc --no-ri
-gem install sass --no-rdoc --no-ri
-gem install bundler --no-rdoc --no-ri
-
 echo "Installing dependencies"
-apt-get install -qy postgresql-9.3 postgresql-server-dev-9.3 elasticsearch redis-server postgis postgresql-contrib postgresql-9.3-postgis-2.1
+apt-get install -qy elasticsearch 
 
 echo "Configuring postgres"
 cat <<EOF > /etc/postgresql/9.3/main/pg_hba.conf
@@ -84,7 +50,7 @@ cat <<EOF > ${bash_profile}
 export WORKON_HOME=${WORKON_HOME}
 export PATH=/vagrant/script/bin:${PATH}
 
-source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+source /usr/local/bin/virtualenvwrapper.sh
 alias ls="ls -F"
 cd /vagrant
 
@@ -97,8 +63,8 @@ lr-nginx
 EOF
 
 echo "Bootstrapping environment"
-echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-/vagrant/script/bin/lr-bootstrap
+su vagrant -c echo "Host github.com\n\tStrictHostKeyChecking no" > /home/vagrant/.ssh/config
+su vagrant -c /vagrant/script/bin/lr-bootstrap
 
 echo "Creating databases"
 set +o errexit
@@ -119,7 +85,7 @@ ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ff02::3 ip6-allhosts
-0.0.0.0  lr-dev
+0.0.0.0  lr-dev lr-ubuntu
 172.16.42.43 ${ETCHOSTS}
 
 EOF
