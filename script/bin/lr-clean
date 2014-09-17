@@ -46,4 +46,9 @@ echo "Clearing elastic search indexes"
 curl -XDELETE http://localhost:9200/public_titles
 curl -XDELETE http://localhost:9200/authenticated_titles
 
+echo "Creating new elastic search indexes"
+curl -XPUT http://localhost:9200/public_titles
+curl -XPUT http://localhost:9200/authenticated_titles
+
+
 echo
