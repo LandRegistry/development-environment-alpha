@@ -197,7 +197,7 @@ function run_unit_tests_for_app {
     #  APP_ROOT=${APP_DIR} ./db/upgrade_database.sh
     #fi 
 
-    APP_ROOT=${APP_ROOT} PORT=$(get_port_for_app $1) py.test --cov-report html --cov-report term --cov $(find_python_packages) tests/
+    APP_ROOT=${APP_ROOT} PORT=$(get_port_for_app $1) py.test --cov-report html --tb=short --cov-report term --cov $(find_python_packages) tests/
     deactivate
     set -e
     echo "Coverage reports have been generated in the directory 'htmlcov'"
