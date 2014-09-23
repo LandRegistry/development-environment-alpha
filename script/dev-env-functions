@@ -122,7 +122,7 @@ function create_virtual_env {
     set -e
   fi
 
-  echo "Activating virtual envrionment [${app_name}]"
+  echo "Activating virtual environment [${app_name}]"
   set +o errexit
   workon ${app_name}
   set -e
