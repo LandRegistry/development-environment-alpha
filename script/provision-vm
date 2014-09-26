@@ -96,4 +96,6 @@ EOF
 
 rm -f /tmp/etchosts
 
-
+# A reminder...
+echo "Copying motd"
+sudo cp /vagrant/config/motd /etc/motd
