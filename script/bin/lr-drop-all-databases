@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source /vagrant/script/dev-env-functions
+
+for app in $(all_apps); do
+    if [ -f "/vagrant/apps/${app}/db/drop_database.sh" ]; then
+        (
+            echo -e "\e[96mDropping database for ${app} \e[0m"
+            APP_DIR=/vagrant/apps/${app}
+            set +o errexit
+            cd ${APP_DIR} && APP_ROOT=${APP_DIR} ./db/drop_database.sh
+            echo
+        )
+    fi
+done
