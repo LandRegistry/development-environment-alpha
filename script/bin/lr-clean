@@ -50,5 +50,7 @@ echo "Creating new elastic search indexes"
 curl -XPUT http://localhost:9200/public_titles
 curl -XPUT http://localhost:9200/authenticated_titles
 
+echo "Clearing Redis"
+redis-cli flushdb
 
 echo
