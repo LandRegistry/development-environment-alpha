@@ -104,9 +104,19 @@ function update_app {
   local app_dir=/vagrant/apps/${app}
 
   if [ -d ${app_dir} ] ; then
-    echo "Refreshing application ${app}"
-    git -C ${app_dir} pull
-    update_submodules_for_app ${app}
+    # presumably, if you're not on master, you don't want interference, so
+    #+ only allow refreshes on master
+    BRANCH=$(git -C ${app_dir} branch | grep "*")
+    if [ "${BRANCH/* /}" == "master" ]; then
+
+      echo "Refreshing application ${app}"
+      git -C ${app_dir} pull
+      update_submodules_for_app ${app}
+    else
+      echo
+      echo -e "\e[36m\t>>> Skipping ${app} -- not on master\e[0m"
+      echo
+    fi
   fi
 }
 
