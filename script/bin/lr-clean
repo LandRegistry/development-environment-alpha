@@ -42,15 +42,14 @@ rm -rf /home/vagrant/land-registry-python-venvs
 echo "Removing unit test coverage reports"
 find . -type d -name "htmlcov" | xargs rm -rf
 
-echo "Clearing elastic search indexes"
-curl -XDELETE http://localhost:9200/public_titles
-curl -XDELETE http://localhost:9200/authenticated_titles
-
-echo "Creating new elastic search indexes"
-curl -XPUT http://localhost:9200/public_titles
-curl -XPUT http://localhost:9200/authenticated_titles
-
+# Redis is shared middleware, so we clean it here instead of
+#+ app-specific db/drop-database.sh scripts
 echo "Clearing Redis"
 redis-cli flushdb
+
+echo "Clearing databases"
+lr-drop-all-databases
+lr-create-all-databases
+
 
 echo
