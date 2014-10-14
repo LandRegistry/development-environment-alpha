@@ -50,6 +50,6 @@ redis-cli flushdb
 echo "Clearing databases"
 lr-drop-all-databases
 lr-create-all-databases
-
+lr-upgrade-all-databases
 
 echo
