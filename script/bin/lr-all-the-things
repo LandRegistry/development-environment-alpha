@@ -1,0 +1,6 @@
+#!/bin/bash
+killtree $(pgrep lr-start-all) SIGKILL
+rm /vagrant/Procfile
+lr-update-all-apps
+lr-clean
+lr-start-all
