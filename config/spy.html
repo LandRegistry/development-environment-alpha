@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html ng-app="spyApp">
+<head>
+<title>Land Registry</title>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<style>
+.good {
+  background-color: green !important;
+}
+.bad {
+  background-color: red !important;
+}
+.dontknow {
+  background-color: orange !important;
+}
+</style>
+</head>
+<body>
+
+<div class="container" ng-controller="MainCtrl">
+<form ng-submit="spy()">
+<div class="form-group">
+  <label for="title">Title Number</label>
+  <input type="text" class="form-control" id="title" ng-model="title" placeholder="Enter title number, then press <Enter>">
+</div>
+</form>
+<table class="table table-striped">
+<thead>
+<tr>
+<td>Name</td><td>URL</td><td>Result</td>
+</tr>
+</thead>
+<tbody>
+
+<tr ng-repeat="app in apps">
+  <td>{{app.name}}</td>
+  <td><a href="{{app.href + app.path + title}}">{{app.href + app.path + title}}</a></td>
+  <td ng-class="show(app.name)">&nbsp;</td>
+</tr>
+
+</tbody>
+</table>
+
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
+<script src="spy.js"></script>
+</body>
+</html>
