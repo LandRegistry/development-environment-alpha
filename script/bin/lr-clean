@@ -27,6 +27,15 @@ esac
 source /vagrant/script/dev-env-functions
 cd /vagrant
 
+echo
+echo "Prepare to have your face melted..."
+echo
+echo 
+cat /vagrant/config/facemelt.txt
+echo
+echo
+
+
 echo "Removing logs"
 rm -rf /vagrant/logs/*
 
