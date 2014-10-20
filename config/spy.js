@@ -11,8 +11,9 @@ spyApp.controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
   $scope.apps = [
     {"name": 'system-of-record', "href": "http://system-of-record." + $scope.host, "path": "/titles/"},
     {"name": 'property-frontend', "href": "http://property-frontend." + $scope.host, "path": "/property/" },
-    {"name": 'search-api', "href": "http://search-api." + $scope.host, "path": "/titles/" },
-    {"name": 'search-api', "href": "http://search-api." + $scope.host, "path": "/auth/titles/" },
+    {"name": 'search-api (public)', "href": "http://search-api." + $scope.host, "path": "/titles/" },
+    {"name": 'search-api (private)', "href": "http://search-api." + $scope.host, "path": "/auth/titles/" },
+    {"name": 'search-api (query)', "href": "http://search-api." + $scope.host, "path": "/search?query=" },
     {"name": 'service-frontend', "href": "http://service-frontend." + $scope.host, "path": "/property/" },
     {"name": 'historian', "href": "http://historian." + $scope.host, "path": "/titles/" }
   ];
