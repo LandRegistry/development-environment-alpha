@@ -1,0 +1,156 @@
+#!/bin/bash
+
+cat <<EOF
+
+ONLY Use this script when the requirements for all apps are un-pegged (i.e. no
+versions specified), and once all tests have been run, which will ensure
+all virtual envs have been created, all deps and test-deps have been
+installed, and all apps work well with the latest/un-pegged dependencies.
+
+OK?
+    <Ctrl-C> to cancel.
+    <Enter> to proceed.
+EOF
+read IGNORED
+
+#set -x
+set -e
+
+case `uname` in
+	Linux)
+		if [[ ! -d /vagrant ]] ; then
+			echo "You need to be running in the vagrant VM to do this"
+			exit 1
+		fi
+	;;
+
+	*)
+		
+		echo
+		echo
+		echo "You need to be running in your vagrant virtual machine to run this."
+		echo
+		echo "Run vagrant ssh from the root directory of the development environment and then re-run this script"
+		echo
+		exit 1
+	;;
+esac
+
+# depends on lr-utils, where the common requirements are kept.
+LR_UTILS=/vagrant/apps/lr-utils
+if [ ! -d $LR_UTILS ] ; then
+  echo "Please clone $LR_UTILS first."
+  exit 1
+fi
+
+COMMON_REQUIREMENTS=$LR_UTILS/requirements/common.txt
+# ALL requirements, even if they are the same dependencies but differ in version
+TEMP_REQUIREMENTS_ALL=$(mktemp -t commonrequirements_all.XXXXXX)
+# As before, but |sort|uniq
+TEMP_REQUIREMENTS_ALL_TRIMMED=$(mktemp -t commonrequirements_all_trimmed.XXXXXX)
+# As before, but only the latest version fo each dependency
+TEMP_REQUIREMENTS_LATEST=$(mktemp -t commonrequirements_latest.XXXXXX)
+
+echo "Capturing all requirements to temp location at $TEMP_REQUIREMENTS_ALL"
+
+source /vagrant/script/dev-env-functions
+lr-bootstrap
+
+# declare an app-to-filename mapping, where filename will be a temporary
+# file containing the unpegged/unversioned dependencies for said app.
+declare -A LOOKUP=()
+
+function freeze_requirements_for_app {
+  local the_app=$1
+
+  check_all_apps_are_valid ${the_app}
+
+  current_dir=`pwd`
+  cd /vagrant/apps/${the_app}
+
+  if [[ ! -f ./requirements.txt ]] ; then
+    echo "No requirements.txt found for application ${the_app}"
+  else
+    APP_DIR=/vagrant/apps/${the_app}
+    pushd ${APP_DIR}
+
+    set +o errexit
+    configure_virtual_env_for_apps ${the_app}
+    workon ${the_app}
+    pip freeze >> ${LOOKUP["${the_app}with"]}
+    cat ${LOOKUP["${the_app}with"]} >> $TEMP_REQUIREMENTS_ALL
+
+
+    # populate the requirements-sans-versions file
+    while read line
+    do
+      DEPENDENCY=$line
+      DEPENDENCY_SANS_VERSION=$DEPENDENCY
+      if [[ ! $DEPENDENCY == *git+http* ]]; then
+        DEPENDENCY_SANS_VERSION=$(echo -n $DEPENDENCY | cut -d'=' -f1)
+      fi
+
+        echo "$DEPENDENCY_SANS_VERSION" >> ${LOOKUP["${the_app}sans"]}
+    done < ${LOOKUP["${the_app}with"]}
+
+
+    deactivate
+    popd
+    set -e
+    echo "Requirements for ${the_app} captured to $TEMP_REQUIREMENTS_ALL"
+    echo
+  fi
+}
+
+for app in $(all_apps); do
+  # get all un-pegged requirements as separate files, so we
+  # can check which dependencies in TEMP_REQUIREMENTS_LATEST appear in 
+  # ALL of them, the latter which will go into COMMON.
+  LOOKUP["${app}with"]=$(mktemp -t requirements_with_versions_for_$app.XXXXXX)
+  LOOKUP["${app}sans"]=$(mktemp -t requirements_sans_versions_for_$app.XXXXXX)
+
+  freeze_requirements_for_app ${app}
+done
+
+# trim the common requirements
+# (reverse sort to bubble latest versions to top)
+
+cat $TEMP_REQUIREMENTS_ALL |sort -r |uniq > $TEMP_REQUIREMENTS_ALL_TRIMMED
+echo "Requirements trimmed to $TEMP_REQUIREMENTS_ALL_TRIMMED"
+
+# now grab all the latest versions of each dependency
+while read line
+do
+  DEPENDENCY=$line
+  DEPENDENCY_SANS_VERSION=$DEPENDENCY
+  if [[ ! $DEPENDENCY == *git+http* ]]; then
+    DEPENDENCY_SANS_VERSION=$(echo -n $DEPENDENCY | cut -d'=' -f1)
+  fi
+
+  if grep -q "^$DEPENDENCY_SANS_VERSION" $TEMP_REQUIREMENTS_LATEST
+  then
+    # latest version of dependency already captured
+    true
+  else
+    echo "$DEPENDENCY" >> $TEMP_REQUIREMENTS_LATEST
+  fi
+done < $TEMP_REQUIREMENTS_ALL_TRIMMED
+
+# once we have all the latest versions of everything, check if a latest
+# version is defined for ALL apps, then make it common (and also
+# remove that dependency from the app's requirements file (in the lookup).
+
+
+# TODO 
+
+echo "Latest dependencies for all apps captured to $TEMP_REQUIREMENTS_LATEST"
+echo 
+echo $TEMP_REQUIREMENTS_ALL
+echo $TEMP_REQUIREMENTS_ALL_TRIMMED
+echo $TEMP_REQUIREMENTS_LATEST
+echo
+echo ${LOOKUP[@]}
+
+#cat $TEMP_REQUIREMENTS_LATEST |sort -r|uniq > $COMMON_REQUIREMENTS
+
+
