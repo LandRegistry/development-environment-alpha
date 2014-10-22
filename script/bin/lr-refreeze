@@ -1,224 +1,57 @@
-#!/bin/bash
+#!/usr/bin/env bash
+jq --version foo >/dev/null 2>&1 || { echo >&2 "I require 'jq' but it's not installed.  Aborting."; exit 1; }
+curl --version foo >/dev/null 2>&1 || { echo >&2 "I require 'curl' but it's not installed.  Aborting."; exit 1; }
+DEBUG=false
+# run this script from Vagrant or local, but croak if something's awry.
+# dirname will be /vagrant/script/bin if on vagrant,
+#+ and /home/whoami/code/landreg-devenv/script/bin if on local (as an example).
+ROOT=$(dirname $0)/../..
+$DEBUG && echo "Dev env root: $ROOT"
+APPS=$ROOT/apps
+[[ -d $APPS ]] || ( echo "apps dir $APPS not found relative to $0" ; exit 1 )
+PKG_META_CACHE=${1:-$(mktemp -d -t pkgmeta.XXXXXX)}
+TMP_WORKSPACE=$(mktemp -d -t requirements.XXXXXX)
 
-echo "Do not use. Doesn't account for requirements_test.txt"
-exit 1
-
-cat <<EOF
-
-ONLY Use this script when the requirements for all apps are un-pegged (i.e. no
-versions specified), and once all tests have been run, which will ensure
-all virtual envs have been created, all deps and test-deps have been
-installed, and all apps work well with the latest/un-pegged dependencies.
-
-OK?
-    <Ctrl-C> to cancel.
-    <Enter> to proceed.
-EOF
-read IGNORED
-
-#set -x
-set -e
-
-case `uname` in
-	Linux)
-		if [[ ! -d /vagrant ]] ; then
-			echo "You need to be running in the vagrant VM to do this"
-			exit 1
-		fi
-	;;
-
-	*)
-		
-		echo
-		echo
-		echo "You need to be running in your vagrant virtual machine to run this."
-		echo
-		echo "Run vagrant ssh from the root directory of the development environment and then re-run this script"
-		echo
-		exit 1
-	;;
-esac
-
-# depends on lr-utils, where the common requirements are kept.
-LR_UTILS=/vagrant/apps/lr-utils
-if [ ! -d $LR_UTILS ] ; then
-  echo "Please clone $LR_UTILS first."
-  exit 1
-fi
-
-WORKSPACE=${1:-$(mktemp -d -t requirements.XXXXXX)}
-
-# where we'll capture requirements common to all apps
-TEMP_COMMON_REQUIREMENTS=$WORKSPACE/requirements_common
-rm -f $TEMP_COMMON_REQUIREMENTS 
-# ALL requirements, even if they are the same dependencies but differ in version
-TEMP_REQUIREMENTS_ALL=$WORKSPACE/requirements_all
-# As before, but |sort|uniq
-TEMP_REQUIREMENTS_ALL_TRIMMED=$WORKSPACE/requirements_all_trimmed
-rm -f $TEMP_REQUIREMENTS_ALL_TRIMMED
-# As before, but only the latest version fo each dependency
-TEMP_REQUIREMENTS_LATEST=$WORKSPACE/requirements_latest
-rm -f $TEMP_REQUIREMENTS_LATEST
-touch $TEMP_REQUIREMENTS_LATEST
-# As before, but without versions
-TEMP_REQUIREMENTS_LATEST_SANS=$WORKSPACE/requirements_latest_sans
-rm -f $TEMP_REQUIREMENTS_LATEST_SANS
-
-source /vagrant/script/dev-env-functions
-lr-bootstrap
-
-# declare an app-to-filename mapping, where filename will be a temporary
-# file containing the unpegged/unversioned dependencies for said app.
-declare -A LOOKUP=()
-
-function freeze_requirements_for_app {
-  local the_app=$1
-
-  if [ -e ${LOOKUP["${the_app}with_ro"]} ] ; then
-    # clear the file we want to re-process
-    rm -f ${LOOKUP["${the_app}with"]}
-    cat ${LOOKUP["${the_app}with_ro"]} > ${LOOKUP["${the_app}with"]}
-  else
-    check_all_apps_are_valid ${the_app}
-
-    set +o errexit
-    configure_virtual_env_for_apps ${the_app}
-    workon ${the_app}
-    pip freeze >> ${LOOKUP["${the_app}with_ro"]}
-    cat ${LOOKUP["${the_app}with_ro"]} >> ${LOOKUP["${the_app}with"]}
-    cat ${LOOKUP["${the_app}with_ro"]} >> $TEMP_REQUIREMENTS_ALL
-
-    # populate the requirements-sans-versions file
-    while read line
-    do
-      DEPENDENCY=$line
-      DEPENDENCY_SANS_VERSION=$DEPENDENCY
-      if [[ ! $DEPENDENCY == *git+http* ]]; then
-        DEPENDENCY_SANS_VERSION=$(echo -n $DEPENDENCY | cut -d'=' -f1)
-      fi
-
-      echo "$DEPENDENCY_SANS_VERSION" >> ${LOOKUP["${the_app}sans_ro"]}
-    done < ${LOOKUP["${the_app}with_ro"]}
-
-    deactivate
-    set -e
-    echo "Requirements for ${the_app} captured to $TEMP_REQUIREMENTS_ALL"
-    echo
-  fi
-}
-
-for app in $(all_apps); do
-
-  pushd /vagrant/apps/${app} >/dev/null
-  if [[ ! -f ./requirements.txt ]] ; then
-    true
-  else
-    # get all un-pegged requirements as separate files, so we
-    # can check which dependencies in TEMP_REQUIREMENTS_LATEST appear in 
-    # ALL of them, the latter which will go into COMMON.
-    LOOKUP["${app}with_ro"]="$WORKSPACE/requirements_with_ro_versions_for_$app"
-    LOOKUP["${app}with"]="$WORKSPACE/requirements_with_versions_for_$app"
-    LOOKUP["${app}sans_ro"]="$WORKSPACE/requirements_sans_ro_versions_for_$app"
-
-    freeze_requirements_for_app ${app}
-  fi
-  popd >/dev/null
-done
-
-echo "workspace: $WORKSPACE"
-
-# trim the common requirements
-# (reverse sort to bubble latest versions to top)
-
-cat $TEMP_REQUIREMENTS_ALL |sort -r |uniq > $TEMP_REQUIREMENTS_ALL_TRIMMED
-
-echo "Getting latest versions of all dependencies..."
-# now grab all the latest versions of each dependency
-while read line
-do
-  DEPENDENCY=$line
-  DEPENDENCY_SANS_VERSION=$DEPENDENCY
-  if [[ ! $DEPENDENCY == *-e\ * ]]; then
-    DEPENDENCY_SANS_VERSION=$(echo -n $DEPENDENCY | cut -d'=' -f1)
-  fi
-
-  if grep -q "^$DEPENDENCY_SANS_VERSION" $TEMP_REQUIREMENTS_LATEST
-  then
-    # latest version of dependency already captured
-    true
-  else
-    echo "$DEPENDENCY" >> $TEMP_REQUIREMENTS_LATEST
-    echo "$DEPENDENCY_SANS_VERSION" >> $TEMP_REQUIREMENTS_LATEST_SANS
-  fi
-done < $TEMP_REQUIREMENTS_ALL_TRIMMED
-
-# once we have all the latest versions of everything, check if a latest
-# version is defined for ALL apps, then make it common (and also
-# remove that dependency from the app's requirements file (in the lookup).
-
-echo "Getting common dependencies..."
-while read DEPENDENCY
-do
-  COMMON_TO_ALL_APPS=true
-  for app in $(all_apps); do
-    # if a dependency is not defined for a project, then it is not common
-    if ! grep -q "^$DEPENDENCY$" ${LOOKUP["${app}sans_ro"]}; then
-      COMMON_TO_ALL_APPS=false
+$DEBUG && echo "Apps defined in: $ROOT/config/apps"
+for app_and_port in $(cat $ROOT/config/apps | grep -v \# | grep -v '^\s*$') ; do
+  app=$(echo -n ${app_and_port} | cut -d':' -f1)
+  $DEBUG && echo "app: $app"
+  for _DEPFILE in requirements.txt requirements_test.txt ; do
+    DEPFILE=$APPS/$app/$_DEPFILE
+    TMP_DEPFILE=$TMP_WORKSPACE/${app}.${_DEPFILE}
+    if [ -e $DEPFILE ] ; then
+      $DEBUG && echo "dependency file: $DEPFILE"
+      while read DEPENDENCY; do 
+        echo "$DEPENDENCY" | grep -q "^#"
+        if [[ ($? == 0) || (-z "$DEPENDENCY") ]] ; then
+          $DEBUG && echo "Skipping invalid dep: $DEPENDENCY"
+        else
+          if [[ $DEPENDENCY == *-e\ * ]]; then
+            echo "$DEPENDENCY" >> $TMP_DEPFILE
+          else
+            DEPENDENCY_NAME=$(echo -n $DEPENDENCY | cut -d'=' -f1)
+            DEP_META_JSON=$PKG_META_CACHE/$DEPENDENCY_NAME
+            if [ ! -f $DEP_META_JSON ] ; then
+              curl -s -o $DEP_META_JSON https://pypi.python.org/pypi/$DEPENDENCY_NAME/json >/dev/null
+              $DEBUG && echo "Caching meta for $DEPENDENCY_NAME"
+            fi
+            VERSION=$(cat $DEP_META_JSON | jq -r '.info.version')
+            if [ $? != 0 ]; then
+              echo "Error parsing jq .info.version in $DEP_META_JSON"
+            fi
+            echo "$DEPENDENCY_NAME==$VERSION" >> $TMP_DEPFILE
+          fi
+        fi
+      done < $DEPFILE
+      $DEBUG && echo "$TMP_DEPFILE"
+      cp $TMP_DEPFILE $DEPFILE
     fi
   done
-
-  # if common to all apps, put in common location, and remove from apps' requirements.
-  if $COMMON_TO_ALL_APPS == true ; then
-    echo "COMMON $DEPENDENCY"
-    for app in $(all_apps); do
-      # TODO remove the dependency from {app}with
-
-      echo "\tdel from ${LOOKUP["${app}with"]}"
-      if [[ $DEPENDENCY == *-e\ * ]]; then
-        sed -i '\%'"${DEPENDENCY}"'%d' ${LOOKUP["${app}with"]}
-      else
-        sed -i '/'"^${DEPENDENCY}==.*"'/d' ${LOOKUP["${app}with"]}
-      fi
-    done
-
-    # put the dependency in common
-    if [[ $DEPENDENCY == *-e\ * ]]; then
-      grep $DEPENDENCY $TEMP_REQUIREMENTS_LATEST >> $TEMP_COMMON_REQUIREMENTS
-    else
-      grep "^$DEPENDENCY==" $TEMP_REQUIREMENTS_LATEST >> $TEMP_COMMON_REQUIREMENTS
-    fi
-  fi
-
-done < $TEMP_REQUIREMENTS_LATEST_SANS
-
-# finally, copy the new pegged requirements over the app requirements
-if [ -e $TEMP_COMMON_REQUIREMENTS ] ; then
-  COMMON_LOC=$LR_UTILS/requirements
-  mkdir -p $COMMON_LOC
-  cp $TEMP_COMMON_REQUIREMENTS  $COMMON_LOC/common.txt
-  echo "please push $COMMON_LOC/common.txt to master"
-fi
-
-for app in $(all_apps); do
-  cp ${LOOKUP["${app}with"]} /vagrant/apps/$app/requirements.txt
-  # TODO copy this to requirements:
-  # -r https://github.com/LandRegistry/lr-utils/blob/master/requirements/common.txt
+  $DEBUG && echo
 done
 
-DEBUG=true
-if [[ $DEBUG == true ]] ; then
-  echo 
-  echo "workspace: $WORKSPACE"
-  echo 
-  echo $TEMP_REQUIREMENTS_ALL
-  echo $TEMP_REQUIREMENTS_ALL_TRIMMED
-  echo $TEMP_REQUIREMENTS_LATEST
-  echo $TEMP_REQUIREMENTS_LATEST_SANS
-  echo $TEMP_COMMON_REQUIREMENTS
-  echo
-  echo ${LOOKUP[@]}
-fi
-
-#cat $TEMP_REQUIREMENTS_LATEST |sort -r|uniq > $COMMON_REQUIREMENTS
-
-
+echo "Workspace: $TMP_WORKSPACE"
+echo "Used cached dependency metadata in $PKG_META_CACHE"
+echo "Re-run with: $0 $PKG_META_CACHE"
+echo
+echo "All dependencies updated. Run all tests before committing/pushing."
