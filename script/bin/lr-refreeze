@@ -21,7 +21,8 @@ for app_and_port in $(cat $ROOT/config/apps | grep -v \# | grep -v '^\s*$') ; do
     TMP_DEPFILE=$TMP_WORKSPACE/${app}.${_DEPFILE}
     if [ -e $DEPFILE ] ; then
       $DEBUG && echo "dependency file: $DEPFILE"
-      while read DEPENDENCY; do 
+      while IFS='' read -r DEPENDENCY || [ -n "$DEPENDENCY" ]; do 
+        $DEBUG && echo ">> DEP=[$DEPENDENCY]"
         echo "$DEPENDENCY" | grep -q "^#"
         if [[ ($? == 0) || (-z "$DEPENDENCY") ]] ; then
           $DEBUG && echo "Skipping invalid dep: $DEPENDENCY"
@@ -30,15 +31,18 @@ for app_and_port in $(cat $ROOT/config/apps | grep -v \# | grep -v '^\s*$') ; do
             echo "$DEPENDENCY" >> $TMP_DEPFILE
           else
             DEPENDENCY_NAME=$(echo -n $DEPENDENCY | cut -d'=' -f1)
+            $DEBUG && echo ">>> NAME=[$DEPENDENCY_NAME]"
             DEP_META_JSON=$PKG_META_CACHE/$DEPENDENCY_NAME
             if [ ! -f $DEP_META_JSON ] ; then
               curl -s -o $DEP_META_JSON https://pypi.python.org/pypi/$DEPENDENCY_NAME/json >/dev/null
               $DEBUG && echo "Caching meta for $DEPENDENCY_NAME"
             fi
+            $DEBUG && echo ">>>> META_FILE=[$DEP_META_JSON]"
             VERSION=$(cat $DEP_META_JSON | jq -r '.info.version')
             if [ $? != 0 ]; then
               echo "Error parsing jq .info.version in $DEP_META_JSON"
             fi
+            $DEBUG && echo ">>>>> $DEPENDENCY_NAME==$VERSION"
             echo "$DEPENDENCY_NAME==$VERSION" >> $TMP_DEPFILE
           fi
         fi
