@@ -1,0 +1,12 @@
+desc "Run syntax, lint, and spec tests."
+
+    begin
+      require 'rspec/core/rake_task'
+
+      RSpec::Core::RakeTask.new(:spec)
+
+      task :default => :spec
+    rescue e
+      puts e
+      # no rspec available
+    end
