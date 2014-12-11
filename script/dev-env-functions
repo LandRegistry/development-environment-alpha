@@ -59,6 +59,7 @@ function update_submodules_for_app {
       echo "Initialising git submodule for ${app}"
       git -C ${app_dir} submodule init
       git -C ${app_dir} submodule update
+      echo "git -C ${app_dir} submodule update"
   fi
 }
 
@@ -68,7 +69,7 @@ function checkout {
 
   if [[ ! -d ${app_dir} ]] ; then
     mkdir -p /vagrant/apps/
-    git -C /vagrant/apps/ clone git@github.com:landregistry/${app}.git
+    git -C /vagrant/apps/ clone --recursive git@github.com:landregistry/${app}.git
     update_submodules_for_app ${app}
   fi
 }
@@ -205,7 +206,7 @@ function run_unit_tests_for_app {
 
     if [[ -f ./db/upgrade_database.sh ]]; then
       APP_ROOT=${APP_DIR} ./db/upgrade_database.sh
-    fi 
+    fi
 
     APP_ROOT=${APP_ROOT} PORT=$(get_port_for_app $1) py.test --cov-report html --tb=short --cov-report term --cov $(find_python_packages) tests/
     deactivate
