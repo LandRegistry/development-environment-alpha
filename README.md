@@ -114,6 +114,14 @@ vagrant destroy
 vagrant up
 ```
 
+## To run the acceptance tests
+
+Run
+
+```
+lr-run-acceptance-tests
+```
+
 ## Advanced topics
 
 For more detailed operations within the dev environment look here: https://github.com/LandRegistry/development-environment/blob/master/README_Advanced.md
