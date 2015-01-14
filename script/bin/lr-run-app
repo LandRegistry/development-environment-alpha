@@ -12,7 +12,7 @@ case `uname` in
 		fi
 	;;
 
-	*)	
+	*)
 		echo
 		echo
 		echo "You need to be running in your vagrant virtual machine to run this."
@@ -37,6 +37,12 @@ if [[ -z $@ ]]; then
 	  		app_to_start=$(basename `pwd`)
 			/vagrant/script/start $app_to_start
 		)
+	elif [ -f ./run_ruby_dev.sh ]; then
+			(
+			app_to_start=$(basename `pwd`)
+			/vagrant/script/start-ruby $app_to_start
+			)
+
 	else
 		die_cant_find_any_apps
 	fi
@@ -47,17 +53,21 @@ else
 	rm -rf /vagrant/logs/*
 
 	for app in $@; do
-		run=/vagrant/apps/${app}/run_dev.sh
 
 		if [[ -z $? ]]; then
 			echo "An error occured while creating virtual environment for ${app}"
 			cat /vagrant/logs/${app}.log
 		else
-			if [[ -f ${run} ]]
+			if [[ -f /vagrant/apps/${app}/run_dev.sh ]]
 		 	then
 		 		echo "${app}: /vagrant/script/start ${app}" >> /vagrant/Procfile
-		 	else
-		 		echo "There is not a run_dev.sh present in ${app} so I'm not going to start it for you"
+		 	elif [[ -f /vagrant/apps/${app}/run_ruby_dev.sh ]]
+			then
+				echo "${app}: /vagrant/script/start-ruby ${app}" >> /vagrant/Procfile
+				cat /vagrant/Procfile
+			else
+				run=/vagrant/apps/${app}/run_dev.sh
+				echo "There is not a run_*_dev.sh present in ${app} so I'm not going to start it for you"
 			fi
 		fi
 	done

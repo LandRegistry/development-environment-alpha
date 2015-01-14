@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+
+source /vagrant/script/dev-env-functions
+
+if [[ -z ${@} ]] ; then
+	echo "No application specified to start!"
+	exit 1
+fi
+
+set +o errexit
+source_app_environment $1
+source_secrets
+cd /vagrant/apps/$1/
+
+./run_ruby_dev.sh $(get_port_for_app $1)
+set -e
