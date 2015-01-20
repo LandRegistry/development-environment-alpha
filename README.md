@@ -33,9 +33,11 @@ and add the following lines:
 Host 172.16.42.43
    ForwardAgent yes
 ```
-After 'vagrant up' you get the following error message -
+If after 'vagrant up' you get the following error message -
 
+```
 "The SSH command responded with a non-zero exit status...."
+```
 
 Then enter the following on the mac -
 
