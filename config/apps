@@ -5,7 +5,7 @@
 # The format is app-name:port
 
 
-system-of-record:8000
+system-of-record-alpha:8000
 mint:8001
 property-frontend:8002
 search-api:8003
